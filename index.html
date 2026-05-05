@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Proteína - Reto 30 Días</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .progress-bar { transition: width 0.5s ease-in-out; }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-900 pb-10">
+
+    <div class="max-w-md mx-auto p-4 sm:p-6">
+        <!-- Header -->
+        <header class="mb-8 text-center mt-4">
+            <h1 class="text-3xl font-bold text-indigo-700 tracking-tight">Reto 30 Días</h1>
+            <p class="text-gray-500 italic text-sm mt-1">"La esencia de la excelencia es la mejora continua"</p>
+            <div class="mt-3 text-xs font-semibold bg-indigo-100 text-indigo-800 py-1.5 px-4 rounded-full inline-block shadow-sm">
+                Objetivo: Marcar Abdomen (Junio 9)
+            </div>
+        </header>
+
+        <!-- Stats Dashboard -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 mb-6 border border-gray-100 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-bl-full -z-10 opacity-50"></div>
+            <div class="flex justify-between items-end mb-3">
+                <div>
+                    <span class="text-5xl font-bold text-gray-800 tracking-tighter" id="total-protein">0</span>
+                    <span class="text-gray-400 font-medium text-lg">/ 162g</span>
+                </div>
+                <div class="text-right pb-1">
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Total Hoy</p>
+                </div>
+            </div>
+            
+            <!-- Progress Bars -->
+            <div class="w-full bg-gray-100 rounded-full h-3 mb-4 overflow-hidden shadow-inner">
+                <div id="main-progress" class="bg-indigo-600 h-full progress-bar" style="width: 0%"></div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 text-center text-[10px] font-bold uppercase tracking-tighter">
+                <div id="mark-min" class="p-1.5 rounded-lg bg-gray-100 text-gray-400 transition-colors">Mín: 117g</div>
+                <div id="mark-mid" class="p-1.5 rounded-lg bg-gray-100 text-gray-400 transition-colors">Med: 143g</div>
+                <div id="mark-opt" class="p-1.5 rounded-lg bg-gray-100 text-gray-400 transition-colors">Ópt: 162g</div>
+            </div>
+        </div>
+
+        <!-- Add Food Form -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 mb-6 border border-gray-100">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    Registro
+                </h2>
+                <button onclick="openModal()" class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md hover:bg-indigo-100 transition-colors">
+                    + Nuevo Alimento
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Alimento</label>
+                    <select id="food-type" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm font-medium">
+                        <!-- Options will be populated by JS -->
+                    </select>
+                </div>
+                
+                <div>
+                    <label id="weight-label" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Peso en Gramos</label>
+                    <input type="number" id="food-weight" placeholder="Ej: 150" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-lg font-semibold text-center">
+                </div>
+
+                <button onclick="addEntry()" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-3.5 rounded-xl shadow-md transform active:scale-[0.98] transition-all flex justify-center items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Añadir al Día
+                </button>
+            </div>
+        </div>
+
+        <!-- Log List -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-gray-800">Diario</h2>
+                <button onclick="resetDay()" class="text-xs text-red-500 font-bold hover:underline px-2 py-1 rounded hover:bg-red-50 transition-colors">Resetear Hoy</button>
+            </div>
+            <div id="entries-list" class="space-y-3">
+                <!-- Entries will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- The Modal for Adding Custom Food -->
+    <div id="customFoodModal" class="modal">
+        <div class="modal-content shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-800">Crear Alimento</h3>
+                <span class="close cursor-pointer text-gray-400 hover:text-gray-800 text-2xl font-bold" onclick="closeModal()">&times;</span>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Nombre</label>
+                    <input type="text" id="custom-name" placeholder="Ej: Yogur Griego" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Proteína por cada 100g</label>
+                    <input type="number" id="custom-protein-per-100" placeholder="Ej: 10" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+                    <p class="text-[10px] text-gray-400 mt-1">Mira la etiqueta nutricional del producto.</p>
+                </div>
+                
+                <div class="flex items-center mt-2">
+                    <input type="checkbox" id="custom-is-unit" class="mr-2 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                    <label for="custom-is-unit" class="text-xs font-medium text-gray-700">Se mide por unidad (Ej: Huevos, Scoop de Polvo)</label>
+                </div>
+                <p id="unit-helper-text" class="text-[10px] text-gray-400 hidden">Si es por unidad, arriba pon cuánta proteína tiene 1 unidad entera.</p>
+
+                <button onclick="saveCustomFood()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md transition-all mt-4">
+                    Guardar Alimento
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Base Data & Initialization
+        const defaultFoods = {
+            'pechuga_pollo': { name: 'Pechuga de Pollo (Cocida)', factor: 0.31, isUnit: false },
+            'bistec_magro': { name: 'Bistec Picado (Magro)', factor: 0.25, isUnit: false },
+            'pescado': { name: 'Pescado Blanco', factor: 0.20, isUnit: false },
+            'huevo': { name: 'Huevo Entero (Unidad)', factor: 6.0, isUnit: true },
+            'lentejas': { name: 'Lentejas (Cocidas)', factor: 0.09, isUnit: false },
+            'frijoles': { name: 'Frijoles (Cocidos)', factor: 0.09, isUnit: false },
+            'avena': { name: 'Avena (Seca)', factor: 0.13, isUnit: false },
+            'arroz': { name: 'Arroz Integral (Cocido)', factor: 0.025, isUnit: false }
+        };
+
+        const goals = { min: 117, mid: 143, opt: 162 };
+        
+        // Load data from LocalStorage or use defaults
+        let customFoods = JSON.parse(localStorage.getItem('protein_custom_foods')) || {};
+        let entries = JSON.parse(localStorage.getItem('protein_entries')) || [];
+        
+        // Combine default and custom foods
+        let allFoods = { ...defaultFoods, ...customFoods };
+
+        // DOM Elements
+        const foodSelect = document.getElementById('food-type');
+        const weightLabel = document.getElementById('weight-label');
+        const weightInput = document.getElementById('food-weight');
+        const modal = document.getElementById('customFoodModal');
+
+        // 2. Populate Dropdown
+        function populateDropdown() {
+            foodSelect.innerHTML = '';
+            
+            // Group Defaults
+            const optgroupDefault = document.createElement('optgroup');
+            optgroupDefault.label = "Alimentos Base";
+            for (const [key, data] of Object.entries(defaultFoods)) {
+                optgroupDefault.innerHTML += `<option value="${key}">${data.name}</option>`;
+            }
+            foodSelect.appendChild(optgroupDefault);
+
+            // Group Custom
+            if (Object.keys(customFoods).length > 0) {
+                const optgroupCustom = document.createElement('optgroup');
+                optgroupCustom.label = "Mis Alimentos";
+                for (const [key, data] of Object.entries(customFoods)) {
+                    optgroupCustom.innerHTML += `<option value="${key}">${data.name}</option>`;
+                }
+                foodSelect.appendChild(optgroupCustom);
+            }
+            
+            updateLabel(); // Set correct label for initial selection
+        }
+
+        // 3. UI Interactions
+        foodSelect.addEventListener('change', updateLabel);
+
+        function updateLabel() {
+            const selectedKey = foodSelect.value;
+            const foodData = allFoods[selectedKey];
+            
+            if (foodData && foodData.isUnit) {
+                weightLabel.innerText = "Cantidad (Unidades/Scoops)";
+                weightInput.placeholder = "Ej: 3";
+            } else {
+                weightLabel.innerText = "Peso en Gramos (Báscula)";
+                weightInput.placeholder = "Ej: 150";
+            }
+        }
+
+        document.getElementById('custom-is-unit').addEventListener('change', (e) => {
+            const helper = document.getElementById('unit-helper-text');
+            const label = document.querySelector('label[for="custom-protein-per-100"]');
+            if (e.target.checked) {
+                helper.classList.remove('hidden');
+                label.innerText = "Proteína por 1 Unidad/Scoop";
+            } else {
+                helper.classList.add('hidden');
+                label.innerText = "Proteína por cada 100g";
+            }
+        });
+
+        // 4. Modal Logic
+        function openModal() {
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+            document.getElementById('custom-name').value = '';
+            document.getElementById('custom-protein-per-100').value = '';
+            document.getElementById('custom-is-unit').checked = false;
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) closeModal();
+        }
+
+        // 5. Core Functions
+        function saveCustomFood() {
+            const name = document.getElementById('custom-name').value.trim();
+            const proteinInput = parseFloat(document.getElementById('custom-protein-per-100').value);
+            const isUnit = document.getElementById('custom-is-unit').checked;
+
+            if (!name || isNaN(proteinInput)) {
+                alert("Por favor llena todos los campos correctamente.");
+                return;
+            }
+
+            // Calculate the mathematical factor
+            // Si es por 100g, el factor es (proteina/100)
+            // Si es por unidad, el factor es directamente los gramos de proteina
+            const factor = isUnit ? proteinInput : (proteinInput / 100);
+            
+            const newKey = 'custom_' + Date.now();
+            
+            customFoods[newKey] = {
+                name: name,
+                factor: factor,
+                isUnit: isUnit
+            };
+
+            // Save to storage
+            localStorage.setItem('protein_custom_foods', JSON.stringify(customFoods));
+            
+            // Update global foods object and dropdown
+            allFoods = { ...defaultFoods, ...customFoods };
+            populateDropdown();
+            
+            // Select the newly added item
+            foodSelect.value = newKey;
+            updateLabel();
+            
+            closeModal();
+        }
+
+        function addEntry() {
+            const typeKey = foodSelect.value;
+            const amount = parseFloat(weightInput.value);
+            
+            if (!amount || amount <= 0) return;
+
+            const foodData = allFoods[typeKey];
+            
+            // Formula: Cantidad * Factor
+            const proteinCalculated = amount * foodData.factor;
+
+            const entry = {
+                id: Date.now(),
+                name: foodData.name,
+                amount: amount,
+                unit: foodData.isUnit ? 'uds' : 'g',
+                protein: parseFloat(proteinCalculated.toFixed(1))
+            };
+
+            entries.push(entry);
+            saveAndRender();
+            weightInput.value = "";
+        }
+
+        function deleteEntry(id) {
+            entries = entries.filter(e => e.id !== id);
+            saveAndRender();
+        }
+
+        function resetDay() {
+            if (confirm("¿Reiniciar el contador de hoy?")) {
+                entries = [];
+                saveAndRender();
+            }
+        }
+
+        function saveAndRender() {
+            localStorage.setItem('protein_entries', JSON.stringify(entries));
+            render();
+        }
+
+        function render() {
+            const list = document.getElementById('entries-list');
+            const totalEl = document.getElementById('total-protein');
+            const progressBar = document.getElementById('main-progress');
+            
+            list.innerHTML = "";
+            let total = 0;
+
+            if (entries.length === 0) {
+                list.innerHTML = '<div class="text-center py-6 bg-gray-50 rounded-xl border border-dashed border-gray-200"><p class="text-gray-400 text-sm italic font-medium">Aún no has registrado nada hoy.</p></div>';
+            }
+
+            entries.forEach(entry => {
+                total += entry.protein;
+                const div = document.createElement('div');
+                div.className = "flex justify-between items-center bg-white p-3 rounded-xl border border-gray-100 shadow-sm";
+                div.innerHTML = `
+                    <div>
+                        <p class="font-bold text-sm text-gray-800">${entry.name}</p>
+                        <p class="text-xs font-medium text-gray-500">${entry.amount}${entry.unit}</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="font-black text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg text-sm">+${entry.protein}g</span>
+                        <button onclick="deleteEntry(${entry.id})" class="text-gray-300 hover:text-red-500 transition-colors p-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+
+            total = parseFloat(total.toFixed(1));
+            totalEl.innerText = total;
+
+            // Update Progress Bar
+            const percentage = Math.min((total / goals.opt) * 100, 100);
+            progressBar.style.width = percentage + "%";
+            
+            if(percentage > 100) {
+                 progressBar.classList.add('bg-green-500');
+                 progressBar.classList.remove('bg-indigo-600');
+            } else {
+                 progressBar.classList.remove('bg-green-500');
+                 progressBar.classList.add('bg-indigo-600');
+            }
+
+            // Update Goal Indicators
+            document.getElementById('mark-min').className = `p-1.5 rounded-lg ${total >= goals.min ? 'bg-green-100 text-green-700 shadow-sm' : 'bg-gray-100 text-gray-400'}`;
+            document.getElementById('mark-mid').className = `p-1.5 rounded-lg ${total >= goals.mid ? 'bg-blue-100 text-blue-700 shadow-sm' : 'bg-gray-100 text-gray-400'}`;
+            document.getElementById('mark-opt').className = `p-1.5 rounded-lg ${total >= goals.opt ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 text-gray-400'}`;
+        }
+
+        // Initialize App
+        populateDropdown();
+        render();
+    </script>
+</body>
+</html>
