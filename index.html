@@ -1,16 +1,21 @@
-<!DOCTYPE html>
+
+              <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora Nutricional</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Librerías para Exportar a PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .progress-bar { transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        /* Modal Styles */
         .modal {
             display: none; position: fixed; z-index: 50; left: 0; top: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px);
@@ -20,10 +25,15 @@
             border: 1px solid #e5e7eb; border-radius: 1.5rem; width: 90%; max-width: 400px;
         }
 
-        /* View transitions */
         .view-section { display: none; animation: fadeIn 0.3s ease-in-out; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .history-details { display: none; }
+        .history-details.open { display: block; animation: fadeIn 0.2s ease-in-out; }
+
+        /* Estilos para el marcador del IMC */
+        #bmi-marker { transition: left 0.5s ease-out; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 pb-12">
@@ -35,13 +45,15 @@
             <h1 class="text-3xl font-black text-gray-800 tracking-tight uppercase">Calculadora <span class="text-green-500">Nutricional</span></h1>
             <p class="text-gray-500 italic text-[10px] mt-1">"La esencia de la excelencia es la mejora continua"</p>
             
-            <!-- Botones de Navegación -->
-            <div class="flex justify-center gap-4 mt-4">
-                <button onclick="switchView('dashboard')" id="btn-nav-dashboard" class="px-4 py-2 rounded-lg text-xs font-bold bg-gray-800 text-white shadow-md transition-colors">
+            <div class="flex justify-center gap-2 mt-4">
+                <button onclick="switchView('dashboard')" id="btn-nav-dashboard" class="px-3 py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-white shadow-md transition-colors flex-1">
                     📊 Tablero
                 </button>
-                <button onclick="switchView('guide')" id="btn-nav-guide" class="px-4 py-2 rounded-lg text-xs font-bold bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors">
-                    👤 Perfil y Guía
+                <button onclick="switchView('history')" id="btn-nav-history" class="px-3 py-2 rounded-lg text-[11px] font-bold bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors flex-1">
+                    📅 Historial
+                </button>
+                <button onclick="switchView('guide')" id="btn-nav-guide" class="px-3 py-2 rounded-lg text-[11px] font-bold bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors flex-1">
+                    👤 Guía
                 </button>
             </div>
         </header>
@@ -64,14 +76,13 @@
                             <p class="text-[10px] text-indigo-500 uppercase tracking-widest font-bold">Proteína</p>
                         </div>
                     </div>
-                    <!-- Barra Proteína -->
                     <div class="w-full bg-gray-100 rounded-full h-2.5 mb-3 overflow-hidden shadow-inner">
                         <div id="bar-prot" class="bg-indigo-500 h-full progress-bar" style="width: 0%"></div>
                     </div>
                     <div class="grid grid-cols-3 gap-2 text-center text-[9px] font-bold uppercase tracking-tighter">
-                        <div id="prot-min" class="p-1 rounded bg-gray-50 text-gray-400 transition-colors">Mín: 117g</div>
-                        <div id="prot-mid" class="p-1 rounded bg-gray-50 text-gray-400 transition-colors">Med: 143g</div>
-                        <div id="prot-opt" class="p-1 rounded bg-gray-50 text-gray-400 transition-colors">Ópt: 162g</div>
+                        <div id="prot-min" class="p-1 rounded bg-gray-50 text-gray-400">Mín: 117g</div>
+                        <div id="prot-mid" class="p-1 rounded bg-gray-50 text-gray-400">Med: 143g</div>
+                        <div id="prot-opt" class="p-1 rounded bg-gray-50 text-gray-400">Ópt: 162g</div>
                     </div>
                 </div>
 
@@ -87,14 +98,13 @@
                             <p class="text-[10px] text-green-500 uppercase tracking-widest font-bold">Calorías</p>
                         </div>
                     </div>
-                    <!-- Barra Calorías -->
                     <div class="w-full bg-gray-100 rounded-full h-2.5 mb-3 overflow-hidden shadow-inner">
                         <div id="bar-cal" class="bg-green-500 h-full progress-bar" style="width: 0%"></div>
                     </div>
                     <div class="grid grid-cols-3 gap-2 text-center text-[9px] font-bold uppercase tracking-tighter">
-                        <div id="cal-min" class="p-1 rounded bg-gray-50 text-gray-400 transition-colors">Suelo: 1500</div>
-                        <div id="cal-opt" class="p-1 rounded bg-gray-50 text-gray-400 transition-colors">Meta: 1700</div>
-                        <div id="cal-max" class="p-1 rounded bg-gray-50 text-gray-400 transition-colors">Límite: 2200</div>
+                        <div id="cal-min" class="p-1 rounded bg-gray-50 text-gray-400">Suelo: 1500</div>
+                        <div id="cal-opt" class="p-1 rounded bg-gray-50 text-gray-400">Meta: 1700</div>
+                        <div id="cal-max" class="p-1 rounded bg-gray-50 text-gray-400">Límite: 2200</div>
                     </div>
                 </div>
             </div>
@@ -106,97 +116,129 @@
                         <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                         Ingresar Comida
                     </h2>
-                    <button onclick="openModal('add')" class="text-xs font-bold text-green-700 bg-green-50 px-3 py-1.5 rounded-lg hover:bg-green-100 transition-colors shadow-sm border border-green-100">
+                    <button onclick="openModal('add')" class="text-[10px] font-bold text-green-700 bg-green-50 px-2 py-1.5 rounded-lg hover:bg-green-100 border border-green-100">
                         + Crear Base
                     </button>
                 </div>
                 
                 <div class="space-y-4">
+                    <div class="grid grid-cols-3 gap-2 p-1 bg-gray-100 rounded-xl">
+                        <button onclick="setMeal('desayuno')" id="btn-meal-desayuno" class="meal-btn bg-white shadow-sm text-indigo-600 font-bold text-xs py-2 rounded-lg">Desayuno</button>
+                        <button onclick="setMeal('almuerzo')" id="btn-meal-almuerzo" class="meal-btn text-gray-500 font-medium text-xs py-2 rounded-lg">Almuerzo</button>
+                        <button onclick="setMeal('cena')" id="btn-meal-cena" class="meal-btn text-gray-500 font-medium text-xs py-2 rounded-lg">Cena</button>
+                    </div>
+
                     <div>
                         <div class="flex justify-between mb-1 items-end">
                             <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Alimento</label>
-                            <div class="space-x-2">
-                                <button onclick="openModal('edit')" class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded hover:bg-blue-100 transition">✏️ Editar</button>
-                                <button onclick="deleteSelectedFood()" class="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-1 rounded hover:bg-red-100 transition">🗑️ Borrar</button>
+                            <div class="space-x-1">
+                                <button onclick="openModal('edit')" class="text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">✏️ Editar</button>
+                                <button onclick="deleteSelectedFood()" class="text-[9px] font-bold text-red-600 bg-red-50 px-2 py-1 rounded">🗑️ Borrar</button>
                             </div>
                         </div>
-                        <select id="food-type" class="w-full p-3 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all text-sm font-semibold appearance-none">
-                            <!-- Options populated by JS -->
+                        <select id="food-type" class="w-full p-3 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-2 focus:ring-green-500 outline-none font-semibold appearance-none">
+                            <!-- Opciones -->
                         </select>
                     </div>
                     
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Peso en Gramos (Báscula)</label>
-                        <input type="number" id="food-weight" placeholder="Ej: 150" class="w-full p-3 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all text-xl font-bold text-center">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Peso en Gramos</label>
+                        <input type="number" id="food-weight" placeholder="Ej: 150" class="w-full p-3 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-xl font-bold text-center">
                     </div>
 
-                    <button onclick="addEntry()" class="w-full bg-gray-900 hover:bg-black text-white font-black uppercase tracking-wide py-4 rounded-xl shadow-md transform active:scale-[0.98] transition-all">
-                        Registrar Consumo
+                    <button onclick="addEntry()" class="w-full bg-gray-900 hover:bg-black text-white font-black uppercase tracking-wide py-4 rounded-xl shadow-md active:scale-[0.98] transition-transform">
+                        Registrar en <span id="btn-meal-text">Desayuno</span>
                     </button>
                 </div>
             </div>
 
-            <!-- DIARIO (LOG) -->
-            <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
-                <div class="flex justify-between items-center mb-4">
+            <!-- DIARIO (LOG POR COMIDAS) -->
+            <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 mb-6">
+                <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
                     <h2 class="text-lg font-bold text-gray-800">Diario de Hoy</h2>
-                    <button onclick="resetDay()" class="text-xs text-red-500 font-bold hover:underline px-2 py-1 rounded hover:bg-red-50 transition-colors">Resetear Día</button>
+                    <button onclick="resetDay()" class="text-[10px] text-red-500 font-bold hover:underline px-2 py-1 bg-red-50 rounded">Resetear Todo</button>
                 </div>
                 
-                <div class="grid grid-cols-12 gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 px-2">
-                    <div class="col-span-6">Alimento</div>
-                    <div class="col-span-2 text-center text-indigo-500">Prot</div>
-                    <div class="col-span-3 text-center text-green-500">Kcal</div>
-                    <div class="col-span-1"></div>
+                <div id="entries-container" class="space-y-4">
+                    <!-- Registros -->
                 </div>
 
-                <div id="entries-list" class="space-y-2">
-                    <!-- Entries will appear here -->
+                <div class="mt-6 pt-4 border-t border-gray-100">
+                    <button onclick="saveDayToHistory()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-wide py-3 rounded-xl shadow-md active:scale-[0.98] transition-transform flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                        Guardar Día en Historial
+                    </button>
                 </div>
             </div>
         </div>
 
         <!-- ========================================== -->
-        <!-- VISTA 2: PERFIL Y GUÍA NUTRICIONAL         -->
+        <!-- VISTA 2: HISTORIAL                         -->
+        <!-- ========================================== -->
+        <div id="view-history" class="view-section">
+            <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 mb-6">
+                <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
+                    <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                        Historial
+                    </h2>
+                    <button onclick="exportToPDF()" class="text-xs font-bold text-white bg-red-600 px-3 py-1.5 rounded-lg hover:bg-red-700 shadow-sm flex items-center">
+                        📄 Exportar PDF
+                    </button>
+                </div>
+                
+                <div id="history-list" class="space-y-3">
+                    <!-- Tarjetas de historial -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VISTA 3: PERFIL Y GUÍA NUTRICIONAL         -->
         <!-- ========================================== -->
         <div id="view-guide" class="view-section">
-            
             <!-- SECCIÓN: PERFIL Y ESTADÍSTICAS -->
             <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 mb-6">
                 <h2 class="text-lg font-bold text-gray-800 flex items-center mb-4 border-b pb-2 border-gray-100">
-                    <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                     Tu Perfil de Atleta
                 </h2>
                 
                 <div class="space-y-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Nombre</label>
-                        <input type="text" id="prof-name" oninput="saveProfile()" placeholder="Ej: Yasser" class="w-full p-3 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-semibold">
+                        <input type="text" id="prof-name" oninput="saveProfile()" placeholder="Ej: Yasser" class="w-full p-3 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl outline-none text-sm font-semibold">
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Peso (kg)</label>
-                            <input type="number" id="prof-weight" oninput="saveProfile()" placeholder="Ej: 65" class="w-full p-3 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-center font-bold">
+                            <input type="number" id="prof-weight" oninput="saveProfile()" placeholder="Ej: 65" class="w-full p-3 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl outline-none text-center font-bold">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Estatura (cm)</label>
-                            <input type="number" id="prof-height" oninput="saveProfile()" placeholder="Ej: 165" class="w-full p-3 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-center font-bold">
+                            <input type="number" id="prof-height" oninput="saveProfile()" placeholder="Ej: 165" class="w-full p-3 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl outline-none text-center font-bold">
                         </div>
                     </div>
 
-                    <!-- Calculadora IMC -->
-                    <div class="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200 text-center relative overflow-hidden">
+                    <!-- Calculadora IMC GRÁFICA -->
+                    <div class="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200 text-center">
                         <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Índice de Masa Corporal (IMC)</p>
-                        <div class="flex items-end justify-center gap-2">
+                        <div class="flex items-end justify-center gap-2 mb-2">
                             <span id="bmi-value" class="text-3xl font-black text-gray-800">0.0</span>
                             <span id="bmi-status" class="text-xs font-bold px-2 py-1 rounded-md mb-1 bg-gray-200 text-gray-600">---</span>
                         </div>
-                        <div class="w-full bg-gray-200 h-1.5 mt-3 rounded-full flex overflow-hidden">
-                            <div class="bg-blue-400 h-full" style="width: 18.5%"></div>
-                            <div class="bg-green-400 h-full" style="width: 31.5%"></div>
-                            <div class="bg-orange-400 h-full" style="width: 25%"></div>
-                            <div class="bg-red-500 h-full" style="width: 25%"></div>
+                        
+                        <!-- Barra de Gráfico -->
+                        <div class="relative w-full h-8 mt-4">
+                            <!-- Flecha marcadora -->
+                            <div id="bmi-marker" class="absolute top-0 text-gray-800 -mt-3 -ml-2 font-black text-lg z-10">▼</div>
+                            <!-- Barra de colores -->
+                            <div class="w-full h-3 mt-2 rounded-full flex overflow-hidden shadow-inner relative">
+                                <div class="bg-blue-300 h-full w-[25%] flex justify-center items-center"><span class="text-[8px] font-bold text-blue-800">Bajo</span></div>
+                                <div class="bg-green-400 h-full w-[25%] flex justify-center items-center"><span class="text-[8px] font-bold text-green-900">Normal</span></div>
+                                <div class="bg-orange-400 h-full w-[25%] flex justify-center items-center"><span class="text-[8px] font-bold text-orange-900">Sobrepeso</span></div>
+                                <div class="bg-red-500 h-full w-[25%] flex justify-center items-center"><span class="text-[8px] font-bold text-red-100">Obesidad</span></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -204,23 +246,21 @@
 
             <!-- SECCIÓN: GUÍA DE ESCENARIOS -->
             <div class="mb-6">
-                <h2 class="text-lg font-bold text-gray-800 mb-4 px-2">Guía de Escenarios (Reto 30 Días)</h2>
-                <p class="text-xs text-gray-500 px-2 mb-4">Ejemplos basados en alimentos reales (cantidades en crudo/cocido según la base de datos) para alcanzar tus objetivos sin pasar hambre ni destruir masa muscular.</p>
+                <h2 class="text-lg font-bold text-gray-800 mb-4 px-2">Guía de Escenarios (Reto)</h2>
 
                 <!-- Escenario 1: Mantenimiento -->
                 <div class="bg-white rounded-2xl shadow-sm p-4 border-l-4 border-l-blue-500 border border-gray-100 mb-4">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="font-black text-gray-800 uppercase tracking-wide text-sm">Escenario 1: Suelo Base</h3>
                     </div>
-                    <div class="flex gap-3 mb-3 text-[10px] font-bold">
-                        <span class="bg-indigo-50 text-indigo-600 px-2 py-1 rounded">Min. Prot: ~117g</span>
-                        <span class="bg-green-50 text-green-600 px-2 py-1 rounded">Cal: ~1500-1600 kcal</span>
+                    <div class="flex gap-3 mb-2 text-[10px] font-bold">
+                        <span class="bg-indigo-50 text-indigo-600 px-2 py-1 rounded">Mín. Prot: 117g</span>
+                        <span class="bg-green-50 text-green-600 px-2 py-1 rounded">Cal: 1500-1600 kcal</span>
                     </div>
-                    <p class="text-xs text-gray-600 mb-2">Ideal para días de descanso activo. Mantiene tu metabolismo funcionando y protege el músculo al límite mínimo.</p>
-                    <ul class="text-xs text-gray-500 space-y-1 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                        <li>🍳 <strong class="text-gray-700">Desayuno:</strong> 150g Huevo (aprox. 3 huevos) + 50g Avena</li>
-                        <li>🍗 <strong class="text-gray-700">Almuerzo:</strong> 150g Pechuga + 150g Arroz + 100g Lentejas</li>
-                        <li>🐟 <strong class="text-gray-700">Cena:</strong> 150g Pescado/Pechuga + 100g Frijoles</li>
+                    <ul class="text-[11px] text-gray-600 space-y-1 bg-gray-50 p-3 rounded-lg border border-gray-100 leading-tight">
+                        <li>☕ <strong class="text-gray-800">Desayuno:</strong> 150g Huevo entero + 50g Avena</li>
+                        <li>🍗 <strong class="text-gray-800">Almuerzo:</strong> 150g Pechuga + 150g Arroz + 100g Lentejas</li>
+                        <li>🌙 <strong class="text-gray-800">Cena:</strong> 150g Pescado/Pechuga + 100g Frijoles</li>
                     </ul>
                 </div>
 
@@ -230,36 +270,33 @@
                     <div class="flex justify-between items-center mb-2 mt-1">
                         <h3 class="font-black text-gray-800 uppercase tracking-wide text-sm">Escenario 2: Recomposición</h3>
                     </div>
-                    <div class="flex gap-3 mb-3 text-[10px] font-bold">
-                        <span class="bg-indigo-50 text-indigo-600 px-2 py-1 rounded">Med. Prot: ~143g</span>
+                    <div class="flex gap-3 mb-2 text-[10px] font-bold">
+                        <span class="bg-indigo-50 text-indigo-600 px-2 py-1 rounded">Med. Prot: 143g</span>
                         <span class="bg-green-50 text-green-600 px-2 py-1 rounded">Cal: ~1700 kcal</span>
                     </div>
-                    <p class="text-xs text-gray-600 mb-2">Déficit calórico perfecto. Quemas grasa sostenidamente y construyes músculo. Tu objetivo diario.</p>
-                    <ul class="text-xs text-gray-500 space-y-1 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                        <li>🍳 <strong class="text-gray-700">Desayuno:</strong> 200g Huevo (o 3 huevos + claras) + 40g Avena + 40g Aguacate</li>
-                        <li>🍗 <strong class="text-gray-700">Almuerzo:</strong> 200g Pechuga + 100g Arroz + 100g Lentejas</li>
-                        <li>🍗 <strong class="text-gray-700">Cena:</strong> 150g Pechuga + 100g Frijoles</li>
+                    <ul class="text-[11px] text-gray-600 space-y-1 bg-gray-50 p-3 rounded-lg border border-gray-100 leading-tight">
+                        <li>☕ <strong class="text-gray-800">Desayuno:</strong> 200g Huevo (o 3 huevos+claras) + 40g Avena + 40g Aguacate</li>
+                        <li>🍗 <strong class="text-gray-800">Almuerzo:</strong> 200g Pechuga + 100g Arroz + 100g Lentejas</li>
+                        <li>🌙 <strong class="text-gray-800">Cena:</strong> 150g Pechuga + 100g Frijoles</li>
                     </ul>
                 </div>
 
                 <!-- Escenario 3: Máximo Óptimo -->
                 <div class="bg-white rounded-2xl shadow-sm p-4 border-l-4 border-l-indigo-600 border border-gray-100 mb-4">
                     <div class="flex justify-between items-center mb-2">
-                        <h3 class="font-black text-gray-800 uppercase tracking-wide text-sm">Escenario 3: Definición Estricta</h3>
+                        <h3 class="font-black text-gray-800 uppercase tracking-wide text-sm">Escenario 3: Definición</h3>
                     </div>
-                    <div class="flex gap-3 mb-3 text-[10px] font-bold">
+                    <div class="flex gap-3 mb-2 text-[10px] font-bold">
                         <span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded">Máx. Prot: 162g+</span>
                         <span class="bg-green-50 text-green-600 px-2 py-1 rounded">Cal: ~1650 kcal</span>
                     </div>
-                    <p class="text-xs text-gray-600 mb-2">Altísima proteína, carbos controlados. Para los días de entrenamiento más pesado. Máxima protección abdominal.</p>
-                    <ul class="text-xs text-gray-500 space-y-1 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                        <li>🍳 <strong class="text-gray-700">Desayuno:</strong> 100g Huevo + 100g Claras líquidas + 40g Avena</li>
-                        <li>🍗 <strong class="text-gray-700">Almuerzo:</strong> 250g Pechuga + 100g Lentejas (Sin arroz)</li>
-                        <li>🥩 <strong class="text-gray-700">Cena:</strong> 200g Bistec Magro o Pechuga + 100g Frijoles + Vegetales</li>
+                    <ul class="text-[11px] text-gray-600 space-y-1 bg-gray-50 p-3 rounded-lg border border-gray-100 leading-tight">
+                        <li>☕ <strong class="text-gray-800">Desayuno:</strong> 100g Huevo + 100g Claras + 40g Avena</li>
+                        <li>🍗 <strong class="text-gray-800">Almuerzo:</strong> 250g Pechuga + 100g Lentejas (Sin arroz)</li>
+                        <li>🌙 <strong class="text-gray-800">Cena:</strong> 200g Bistec Magro o Pechuga + 100g Frijoles</li>
                     </ul>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -270,33 +307,23 @@
                 <h3 id="modal-title" class="text-xl font-black text-gray-800 uppercase tracking-wide">Nuevo Alimento</h3>
                 <span class="close cursor-pointer text-gray-400 hover:text-gray-800 text-2xl font-bold" onclick="closeModal()">&times;</span>
             </div>
-            
             <input type="hidden" id="modal-food-id">
-            
             <div class="space-y-5">
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Nombre del Alimento</label>
-                    <input type="text" id="modal-name" placeholder="Ej: Yogur Griego..." class="w-full p-3 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-sm font-semibold">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Nombre</label>
+                    <input type="text" id="modal-name" class="w-full p-3 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl outline-none text-sm font-semibold">
                 </div>
-                
                 <div class="grid grid-cols-2 gap-4">
                     <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                        <label class="block text-[10px] font-bold text-indigo-600 uppercase tracking-wider mb-1">Proteína (g)</label>
-                        <span class="text-[9px] text-gray-500 block mb-2">Por 100 gramos</span>
-                        <input type="number" id="modal-prot" placeholder="Ej: 31" class="w-full p-2 bg-white border border-indigo-200 text-gray-800 rounded-lg outline-none text-center font-bold">
+                        <label class="block text-[10px] font-bold text-indigo-600 uppercase tracking-wider mb-1">Prot. (g/100g)</label>
+                        <input type="number" id="modal-prot" class="w-full p-2 bg-white border border-indigo-200 text-gray-800 rounded-lg outline-none text-center font-bold">
                     </div>
                     <div class="bg-green-50 p-3 rounded-xl border border-green-100">
-                        <label class="block text-[10px] font-bold text-green-600 uppercase tracking-wider mb-1">Calorías (kcal)</label>
-                        <span class="text-[9px] text-gray-500 block mb-2">Por 100 gramos</span>
-                        <input type="number" id="modal-cal" placeholder="Ej: 165" class="w-full p-2 bg-white border border-green-200 text-gray-800 rounded-lg outline-none text-center font-bold">
+                        <label class="block text-[10px] font-bold text-green-600 uppercase tracking-wider mb-1">Cal. (kcal/100g)</label>
+                        <input type="number" id="modal-cal" class="w-full p-2 bg-white border border-green-200 text-gray-800 rounded-lg outline-none text-center font-bold">
                     </div>
                 </div>
-                
-                <p id="modal-error" class="hidden text-xs text-red-500 font-bold mt-1 text-center">Por favor, usa números válidos.</p>
-
-                <button onclick="saveFoodData()" class="w-full bg-green-600 hover:bg-green-500 text-white font-black uppercase py-3 rounded-xl shadow-md transition-all mt-2">
-                    Guardar Fórmula
-                </button>
+                <button onclick="saveFoodData()" class="w-full bg-green-600 hover:bg-green-500 text-white font-black uppercase py-3 rounded-xl transition-all">Guardar</button>
             </div>
         </div>
     </div>
@@ -307,8 +334,8 @@
             <h3 id="confirm-title" class="text-xl font-black text-gray-800 mb-2">Confirmar</h3>
             <p id="confirm-msg" class="text-sm text-gray-500 mb-6">¿Estás seguro?</p>
             <div class="flex justify-center space-x-3">
-                <button onclick="closeConfirm()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-bold hover:bg-gray-200 transition-colors">Cancelar</button>
-                <button onclick="executeConfirm()" class="px-4 py-2 bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 transition-colors">Sí, continuar</button>
+                <button onclick="closeConfirm()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-bold hover:bg-gray-200">Cancelar</button>
+                <button id="confirm-btn-yes" onclick="executeConfirm()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700">Sí, continuar</button>
             </div>
         </div>
     </div>
@@ -316,16 +343,12 @@
     <script>
         // --- 1. DATOS BASE ---
         const initialFoods = {
-            'base_pechuga': { name: 'Pechuga de Pollo (Cocida)', prot: 31, cal: 165 },
-            'base_bistec': { name: 'Bistec Magro (Cocido)', prot: 25, cal: 250 },
-            'base_pescado': { name: 'Pescado Blanco (Cocido)', prot: 20, cal: 105 },
-            'base_huevo': { name: 'Huevo Entero (Revuelto/Cocido)', prot: 13, cal: 155 },
-            'base_claras': { name: 'Claras de Huevo (Líquidas)', prot: 11, cal: 52 },
+            'base_pechuga': { name: 'Pechuga de Pollo', prot: 31, cal: 165 },
+            'base_bistec': { name: 'Bistec Magro', prot: 25, cal: 250 },
+            'base_huevo': { name: 'Huevo Entero', prot: 13, cal: 155 },
             'base_lentejas': { name: 'Lentejas (Cocidas)', prot: 9, cal: 116 },
-            'base_frijoles': { name: 'Frijoles (Cocidos)', prot: 9, cal: 130 },
-            'base_avena': { name: 'Avena (Seca)', prot: 13, cal: 389 },
-            'base_arroz': { name: 'Arroz Integral (Cocido)', prot: 2.5, cal: 112 },
-            'base_aguacate': { name: 'Aguacate (Crudo)', prot: 2, cal: 160 }
+            'base_arroz': { name: 'Arroz Integral', prot: 2.5, cal: 112 },
+            'base_avena': { name: 'Avena', prot: 13, cal: 389 }
         };
 
         const goals = {
@@ -333,7 +356,21 @@
             cal: { min: 1500, opt: 1700, max: 2200 }
         };
         
-        // --- 2. MANEJO DE ESTADO Y LOCALSTORAGE ---
+        // Historial Pre-cargado
+        const preloadedHistory = [
+            { id: '1715835600000', date: '2026-05-16', displayDate: '16 de Mayo, 2026', prot: 35.5, cal: 559, detailed: false },
+            { id: '1715749200000', date: '2026-05-15', displayDate: '15 de Mayo, 2026', prot: 99.6, cal: 1460, detailed: false },
+            { id: '1715662800000', date: '2026-05-14', displayDate: '14 de Mayo, 2026', prot: 123.8, cal: 1669, detailed: false },
+            { id: '1715576400000', date: '2026-05-13', displayDate: '13 de Mayo, 2026', prot: 137.8, cal: 1864, detailed: false },
+            { id: '1715490000000', date: '2026-05-12', displayDate: '12 de Mayo, 2026', prot: 121.4, cal: 1803, detailed: false },
+            { id: '1715403600000', date: '2026-05-11', displayDate: '11 de Mayo, 2026', prot: 128.7, cal: 1704, detailed: false },
+            { id: '1715317200000', date: '2026-05-10', displayDate: '10 de Mayo, 2026', prot: 130.9, cal: 1724, detailed: false },
+            { id: '1715230800000', date: '2026-05-09', displayDate: '9 de Mayo, 2026', prot: 136.6, cal: 1629, detailed: false },
+            { id: '1715144400000', date: '2026-05-08', displayDate: '8 de Mayo, 2026', prot: 136.0, cal: 1614, detailed: false },
+            { id: '1715058000000', date: '2026-05-07', displayDate: '7 de Mayo, 2026', prot: 133.8, cal: 1515, detailed: false }
+        ];
+
+        // --- 2. ESTADO ---
         let foods = JSON.parse(localStorage.getItem('retodb_foods'));
         if (!foods || Object.keys(foods).length === 0) {
             foods = initialFoods;
@@ -341,71 +378,360 @@
         }
 
         let entries = JSON.parse(localStorage.getItem('retodb_entries')) || [];
+        let history = JSON.parse(localStorage.getItem('retodb_history'));
+        if (!history || history.length === 0) {
+            history = preloadedHistory;
+            localStorage.setItem('retodb_history', JSON.stringify(history));
+        }
         
-        let profile = JSON.parse(localStorage.getItem('retodb_profile')) || {
-            name: '', weight: '', height: ''
-        };
+        let profile = JSON.parse(localStorage.getItem('retodb_profile')) || { name: '', weight: '', height: '' };
 
-        // DOM Elements
-        const foodSelect = document.getElementById('food-type');
-        const weightInput = document.getElementById('food-weight');
-        const modal = document.getElementById('foodModal');
-
-        // Modal Confirmación
-        let confirmAction = null;
-
-        function showConfirm(title, message, callback) {
-            document.getElementById('confirm-title').innerText = title;
-            document.getElementById('confirm-msg').innerText = message;
-            confirmAction = callback;
-            document.getElementById('confirmModal').style.display = 'block';
-        }
-
-        function closeConfirm() {
-            document.getElementById('confirmModal').style.display = 'none';
-            confirmAction = null;
-        }
-
-        function executeConfirm() {
-            if (confirmAction) confirmAction();
-            closeConfirm();
-        }
+        let currentMeal = 'desayuno';
 
         // --- 3. INICIALIZACIÓN ---
         function initApp() {
             populateDropdown();
             renderDashboard();
+            renderHistory();
             loadProfile();
+            setMeal('desayuno');
         }
 
-        // --- NAVEGACIÓN ENTRE VISTAS ---
         function switchView(viewName) {
-            // Ocultar todas
-            document.getElementById('view-dashboard').classList.remove('active');
-            document.getElementById('view-guide').classList.remove('active');
-            
-            // Restablecer estilos de botones
-            document.getElementById('btn-nav-dashboard').className = "px-4 py-2 rounded-lg text-xs font-bold bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors";
-            document.getElementById('btn-nav-guide').className = "px-4 py-2 rounded-lg text-xs font-bold bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors";
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('header button').forEach(el => el.className = "px-3 py-2 rounded-lg text-[11px] font-bold bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors flex-1");
 
-            // Mostrar activa y resaltar botón
-            if(viewName === 'dashboard') {
-                document.getElementById('view-dashboard').classList.add('active');
-                document.getElementById('btn-nav-dashboard').className = "px-4 py-2 rounded-lg text-xs font-bold bg-gray-800 text-white shadow-md transition-colors";
-            } else if (viewName === 'guide') {
-                document.getElementById('view-guide').classList.add('active');
-                document.getElementById('btn-nav-guide').className = "px-4 py-2 rounded-lg text-xs font-bold bg-gray-800 text-white shadow-md transition-colors";
+            document.getElementById(`view-${viewName}`).classList.add('active');
+            document.getElementById(`btn-nav-${viewName}`).className = "px-3 py-2 rounded-lg text-[11px] font-bold bg-gray-800 text-white shadow-md transition-colors flex-1";
+            
+            if(viewName === 'history') renderHistory();
+            if(viewName === 'guide') setTimeout(calculateBMI, 100);
+        }
+
+        function setMeal(meal) {
+            currentMeal = meal;
+            ['desayuno', 'almuerzo', 'cena'].forEach(m => {
+                const btn = document.getElementById(`btn-meal-${m}`);
+                if (m === meal) btn.className = "meal-btn bg-white shadow-sm text-indigo-600 font-bold text-xs py-2 rounded-lg transition-all";
+                else btn.className = "meal-btn text-gray-500 font-medium text-xs py-2 rounded-lg transition-all hover:bg-gray-200 bg-transparent";
+            });
+            document.getElementById('btn-meal-text').innerText = meal.charAt(0).toUpperCase() + meal.slice(1);
+        }
+
+        // --- 4. FUNCIONES CORE ---
+        function populateDropdown() {
+            const select = document.getElementById('food-type');
+            select.innerHTML = '';
+            for (const [key, data] of Object.entries(foods)) select.innerHTML += `<option value="${key}">${data.name}</option>`;
+        }
+
+        function addEntry() {
+            const selectedKey = document.getElementById('food-type').value;
+            const weight = parseFloat(document.getElementById('food-weight').value);
+            if (!selectedKey || !weight || weight <= 0) return;
+
+            const foodData = foods[selectedKey];
+            const multiplier = weight / 100;
+            
+            entries.push({
+                id: Date.now(),
+                meal: currentMeal,
+                name: foodData.name,
+                weight: weight,
+                prot: parseFloat((multiplier * foodData.prot).toFixed(1)),
+                cal: Math.round(multiplier * foodData.cal)
+            });
+
+            localStorage.setItem('retodb_entries', JSON.stringify(entries));
+            renderDashboard();
+            document.getElementById('food-weight').value = "";
+        }
+
+        function deleteEntry(id) {
+            entries = entries.filter(e => e.id !== id);
+            localStorage.setItem('retodb_entries', JSON.stringify(entries));
+            renderDashboard();
+        }
+
+        function resetDay() {
+            showConfirm("Resetear Día", "¿Borrar los registros de hoy de forma permanente?", () => {
+                entries = [];
+                localStorage.setItem('retodb_entries', JSON.stringify(entries));
+                renderDashboard();
+            }, "bg-red-600", "Sí, borrar");
+        }
+
+        function saveDayToHistory() {
+            if (entries.length === 0) {
+                alert("No hay nada que guardar hoy."); return;
+            }
+
+            showConfirm("Guardar Día", "¿Guardar en el historial? Los datos del tablero se mantendrán hasta que decidas resetearlos.", () => {
+                let d = new Date();
+                const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                let displayStr = `${d.getDate()} de ${meses[d.getMonth()]}, ${d.getFullYear()}`;
+                
+                let grandProt = 0; let grandCal = 0;
+                let mealsObj = { desayuno: [], almuerzo: [], cena: [] };
+                
+                entries.forEach(e => {
+                    grandProt += e.prot; grandCal += e.cal;
+                    mealsObj[e.meal].push(e);
+                });
+
+                const newEntry = {
+                    id: Date.now().toString(),
+                    date: d.toISOString().split('T')[0],
+                    displayDate: displayStr,
+                    prot: parseFloat(grandProt.toFixed(1)),
+                    cal: Math.round(grandCal),
+                    detailed: true,
+                    meals: mealsObj
+                };
+
+                history.unshift(newEntry);
+                localStorage.setItem('retodb_history', JSON.stringify(history));
+                
+                alert("¡Guardado en el historial con éxito!");
+                renderHistory();
+            }, "bg-indigo-600", "Guardar");
+        }
+
+        function renderDashboard() {
+            const container = document.getElementById('entries-container');
+            container.innerHTML = "";
+            let grandProt = 0; let grandCal = 0;
+
+            const mealsConfig = [
+                { id: 'desayuno', title: '☕ Desayuno' },
+                { id: 'almuerzo', title: '🍗 Almuerzo' },
+                { id: 'cena', title: '🌙 Cena' }
+            ];
+
+            mealsConfig.forEach(mealCfg => {
+                const mealEntries = entries.filter(e => e.meal === mealCfg.id);
+                let mealProt = 0; let mealCal = 0;
+                
+                mealEntries.forEach(e => { mealProt += e.prot; mealCal += e.cal; });
+                grandProt += mealProt; grandCal += mealCal;
+
+                if (mealEntries.length > 0) {
+                    let html = `
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-2 px-1">
+                            <h3 class="font-black text-gray-700 text-xs uppercase">${mealCfg.title}</h3>
+                            <div class="text-[10px] font-bold text-gray-500">
+                                <span class="text-indigo-600">${mealProt.toFixed(1)}g P</span> | <span class="text-green-600">${Math.round(mealCal)} kcal</span>
+                            </div>
+                        </div>
+                        <div class="space-y-1">`;
+                    
+                    mealEntries.forEach(entry => {
+                        html += `
+                        <div class="flex justify-between items-center bg-gray-50 p-2 rounded-lg border border-gray-100">
+                            <div class="flex-1">
+                                <p class="font-bold text-[11px] text-gray-800 leading-tight">${entry.name}</p>
+                                <p class="text-[9px] font-semibold text-gray-400">${entry.weight}g</p>
+                            </div>
+                            <div class="flex items-center gap-2 text-[10px] font-black">
+                                <span class="text-indigo-600">${entry.prot}g</span>
+                                <span class="text-green-600 w-8 text-right">${entry.cal}</span>
+                                <button onclick="deleteEntry(${entry.id})" class="text-gray-300 hover:text-red-500 ml-1">✖</button>
+                            </div>
+                        </div>`;
+                    });
+                    
+                    html += `</div></div>`;
+                    container.innerHTML += html;
+                }
+            });
+
+            if (entries.length === 0) container.innerHTML = '<p class="text-center py-4 text-gray-400 text-xs font-medium italic">Aún no hay alimentos hoy.</p>';
+
+            grandProt = parseFloat(grandProt.toFixed(1)); grandCal = Math.round(grandCal);
+            document.getElementById('total-prot').innerText = grandProt; 
+            document.getElementById('total-cal').innerText = grandCal;
+
+            document.getElementById('bar-prot').style.width = Math.min((grandProt / goals.prot.opt) * 100, 100) + "%";
+            document.getElementById('bar-cal').style.width = Math.min((grandCal / goals.cal.max) * 100, 100) + "%";
+            
+            if (grandCal > goals.cal.max) document.getElementById('bar-cal').classList.replace('bg-green-500', 'bg-red-500');
+            else document.getElementById('bar-cal').classList.replace('bg-red-500', 'bg-green-500');
+        }
+
+        // --- 5. HISTORIAL Y PDF ---
+        function getStatus(value, min, mid, opt, isCal = false) {
+            if (isCal) {
+                if (value < min) return { text: 'BAJO', color: 'bg-red-100 text-red-700' };
+                if (value > 2200) return { text: 'EXCESO', color: 'bg-red-100 text-red-700' };
+                if (value >= 1600 && value <= 1800) return { text: 'ÓPTIMO', color: 'bg-green-100 text-green-700' };
+                return { text: 'MEDIO', color: 'bg-blue-100 text-blue-700' };
+            } else {
+                if (value < min) return { text: 'BAJO', color: 'bg-red-100 text-red-700' };
+                if (value >= min && value < mid) return { text: 'MÍNIMO', color: 'bg-orange-100 text-orange-700' };
+                if (value >= mid && value < opt) return { text: 'MEDIO', color: 'bg-blue-100 text-blue-700' };
+                return { text: 'ÓPTIMO', color: 'bg-indigo-100 text-indigo-700' };
             }
         }
 
-        // --- 4. FUNCIONES DEL PERFIL E IMC ---
+        function toggleHistoryDetails(id) {
+            const el = document.getElementById(`hist-det-${id}`);
+            if (el) el.classList.toggle('open');
+        }
+
+        // Borrado del Historial Individual
+        function deleteHistoryItem(id) {
+            history = history.filter(h => h.id !== id);
+            localStorage.setItem('retodb_history', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function deleteHistoryConfirm(id) {
+            const item = history.find(h => h.id === id);
+            if (!item) return;
+            showConfirm(
+                "Eliminar del Historial",
+                `¿Estás seguro de eliminar el registro del ${item.displayDate}? Esta acción no se puede deshacer.`,
+                () => { deleteHistoryItem(id); },
+                "bg-red-600",
+                "Sí, eliminar"
+            );
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = "";
+
+            history.forEach(h => {
+                const protStatus = getStatus(h.prot, goals.prot.min, goals.prot.mid, goals.prot.opt, false);
+                const calStatus = getStatus(h.cal, goals.cal.min, 0, goals.cal.opt, true);
+                
+                let html = `
+                <div class="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                    <div class="p-3 ${h.detailed ? 'cursor-pointer hover:bg-gray-100' : ''}" onclick="${h.detailed ? `toggleHistoryDetails('${h.id}')` : ''}">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-xs text-gray-800">📅 ${h.displayDate}</span>
+                            <div class="flex items-center gap-2">
+                                ${h.detailed ? '<span class="text-[10px] text-gray-400 font-bold">🔽 Ver Diario</span>' : ''}
+                                <!-- Botón para Eliminar individualmente del historial -->
+                                <button onclick="event.stopPropagation(); deleteHistoryConfirm('${h.id}')" class="text-[10px] font-bold text-red-600 bg-red-50 hover:bg-red-100 px-2 py-0.5 rounded transition-colors">
+                                    🗑️ Borrar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="bg-white p-2 rounded border border-indigo-100 flex justify-between items-center">
+                                <div><p class="text-[9px] text-gray-400 font-bold uppercase">Proteína</p><p class="font-black text-indigo-600 text-sm">${h.prot}g</p></div>
+                                <span class="${protStatus.color} px-1.5 py-0.5 rounded text-[8px] font-black">${protStatus.text}</span>
+                            </div>
+                            <div class="bg-white p-2 rounded border border-green-100 flex justify-between items-center">
+                                <div><p class="text-[9px] text-gray-400 font-bold uppercase">Calorías</p><p class="font-black text-green-600 text-sm">${h.cal}</p></div>
+                                <span class="${calStatus.color} px-1.5 py-0.5 rounded text-[8px] font-black">${calStatus.text}</span>
+                            </div>
+                        </div>
+                    </div>`;
+
+                if (h.detailed && h.meals) {
+                    html += `<div id="hist-det-${h.id}" class="history-details bg-white p-3 border-t border-gray-100 text-xs">`;
+                    ['desayuno', 'almuerzo', 'cena'].forEach(m => {
+                        if (h.meals[m] && h.meals[m].length > 0) {
+                            let mProt = 0; let mCal = 0; let itemsHtml = '';
+                            h.meals[m].forEach(item => {
+                                mProt += item.prot; mCal += item.cal;
+                                itemsHtml += `<div class="flex justify-between text-[10px] text-gray-500 ml-2 mt-1"><span>- ${item.name} (${item.weight}g)</span> <span>${item.prot}g P / ${item.cal} c</span></div>`;
+                            });
+                            html += `<div class="mb-2"><div class="font-bold text-gray-700 capitalize flex justify-between text-[11px] bg-gray-50 px-2 py-1 rounded"><span>${m}</span><span class="text-gray-400">${mProt.toFixed(1)}g P | ${mCal} cal</span></div>${itemsHtml}</div>`;
+                        }
+                    });
+                    html += `</div>`;
+                }
+                html += `</div>`;
+                list.innerHTML += html;
+            });
+        }
+
+        // NUEVA FUNCIÓN MEJORADA: PDF con desglose completo y subtotales por comida/alimento
+        function exportToPDF() {
+            if(!window.jspdf) { alert("Cargando librerías PDF, intenta de nuevo en 2 segundos."); return; }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(16);
+            doc.setFont("Helvetica", "bold");
+            doc.text("REPORTE NUTRICIONAL DETALLADO - OPERACIÓN ABDOMEN", 14, 15);
+            doc.setFontSize(10);
+            doc.setFont("Helvetica", "normal");
+            doc.setTextColor(100);
+            doc.text(`Generado: ${new Date().toLocaleDateString()} | Atleta: ${profile.name || 'Yasser'}`, 14, 22);
+
+            const tableColumn = ["Fecha", "Comida / Alimento", "Cantidad (g)", "Proteína", "Calorías"];
+            const tableRows = [];
+
+            history.forEach(h => {
+                if (h.detailed && h.meals) {
+                    let isFirstRowOfDay = true;
+                    ['desayuno', 'almuerzo', 'cena'].forEach(meal => {
+                        if (h.meals[meal] && h.meals[meal].length > 0) {
+                            h.meals[meal].forEach(item => {
+                                tableRows.push([
+                                    isFirstRowOfDay ? h.displayDate : "",
+                                    `${meal.toUpperCase()} - ${item.name}`,
+                                    `${item.weight}g`,
+                                    `${item.prot}g`,
+                                    `${item.cal} kcal`
+                                ]);
+                                isFirstRowOfDay = false;
+                            });
+                        }
+                    });
+                    // Fila de subtotal para este día específico
+                    tableRows.push([
+                        `TOTAL ${h.displayDate}`,
+                        "",
+                        "",
+                        `${h.prot}g`,
+                        `${h.cal} kcal`
+                    ]);
+                } else {
+                    // Entradas rápidas iniciales
+                    tableRows.push([
+                        h.displayDate,
+                        "Registro rápido (Manual)",
+                        "-",
+                        `${h.prot}g`,
+                        `${h.cal} kcal`
+                    ]);
+                }
+            });
+
+            doc.autoTable({
+                head: [tableColumn],
+                body: tableRows,
+                startY: 28,
+                theme: 'striped',
+                headStyles: { fillColor: [16, 185, 129] }, // Emerald-500
+                styles: { fontSize: 8, cellPadding: 2 },
+                didParseCell: function(data) {
+                    // Si es una fila de subtotal del día, le aplicamos diseño bold y color especial
+                    if (data.row.raw[0] && data.row.raw[0].startsWith("TOTAL")) {
+                        data.cell.styles.fontStyle = 'bold';
+                        data.cell.styles.fillColor = [240, 253, 244]; // Soft green bg
+                        data.cell.styles.textColor = [21, 128, 61]; // Forest green
+                    }
+                }
+            });
+
+            doc.save(`Reporte_Nutricional_Detallado_${new Date().toISOString().split('T')[0]}.pdf`);
+        }
+
+        // --- 6. PERFIL E IMC GRÁFICO ---
         function loadProfile() {
             if (profile.name) document.getElementById('prof-name').value = profile.name;
             if (profile.weight) document.getElementById('prof-weight').value = profile.weight;
             if (profile.height) document.getElementById('prof-height').value = profile.height;
             calculateBMI();
         }
-
         function saveProfile() {
             profile.name = document.getElementById('prof-name').value;
             profile.weight = document.getElementById('prof-weight').value;
@@ -413,209 +739,76 @@
             localStorage.setItem('retodb_profile', JSON.stringify(profile));
             calculateBMI();
         }
-
         function calculateBMI() {
-            const w = parseFloat(profile.weight);
-            const h = parseFloat(profile.height) / 100; // cm to m
-            const valEl = document.getElementById('bmi-value');
-            const statEl = document.getElementById('bmi-status');
+            const w = parseFloat(profile.weight); const h = parseFloat(profile.height) / 100;
+            const valEl = document.getElementById('bmi-value'); const statEl = document.getElementById('bmi-status');
+            const marker = document.getElementById('bmi-marker');
 
-            if (!w || !h || h <= 0) {
-                valEl.innerText = "0.0";
-                statEl.innerText = "Ingresa datos";
-                statEl.className = "text-xs font-bold px-2 py-1 rounded-md mb-1 bg-gray-200 text-gray-600";
-                return;
+            if (!w || !h || h <= 0) { 
+                valEl.innerText = "0.0"; statEl.innerText = "Ingresa datos"; 
+                marker.style.left = "0%"; return; 
             }
 
-            const bmi = (w / (h * h)).toFixed(1);
-            valEl.innerText = bmi;
+            const bmi = (w / (h * h));
+            valEl.innerText = bmi.toFixed(1);
 
-            if (bmi < 18.5) {
-                statEl.innerText = "Bajo Peso";
-                statEl.className = "text-xs font-bold px-2 py-1 rounded-md mb-1 bg-blue-100 text-blue-700";
-            } else if (bmi >= 18.5 && bmi <= 24.9) {
-                statEl.innerText = "Normal / Saludable";
-                statEl.className = "text-xs font-bold px-2 py-1 rounded-md mb-1 bg-green-100 text-green-700";
-            } else if (bmi >= 25 && bmi <= 29.9) {
-                statEl.innerText = "Sobrepeso (Fase Volumen?)";
-                statEl.className = "text-xs font-bold px-2 py-1 rounded-md mb-1 bg-orange-100 text-orange-700";
-            } else {
-                statEl.innerText = "Obesidad";
-                statEl.className = "text-xs font-bold px-2 py-1 rounded-md mb-1 bg-red-100 text-red-700";
-            }
+            let percent = 0;
+            if (bmi < 18.5) percent = (bmi / 18.5) * 25;
+            else if (bmi <= 24.9) percent = 25 + ((bmi - 18.5) / 6.4) * 25;
+            else if (bmi <= 29.9) percent = 50 + ((bmi - 25) / 4.9) * 25;
+            else percent = 75 + Math.min((bmi - 30) / 10, 1) * 25;
+            
+            marker.style.left = `${Math.min(Math.max(percent, 0), 100)}%`;
+
+            if (bmi < 18.5) { statEl.innerText = "Bajo Peso"; statEl.className = "text-xs font-bold px-2 py-1 rounded-md mb-1 bg-blue-100 text-blue-700"; }
+            else if (bmi >= 18.5 && bmi <= 24.9) { statEl.innerText = "Normal"; statEl.className = "text-xs font-bold px-2 py-1 rounded-md mb-1 bg-green-100 text-green-700"; }
+            else { statEl.innerText = "Sobrepeso / Obesidad"; statEl.className = "text-xs font-bold px-2 py-1 rounded-md mb-1 bg-orange-100 text-orange-700"; }
         }
 
-        // --- 5. FUNCIONES DE ALIMENTOS ---
-        function populateDropdown() {
-            foodSelect.innerHTML = '';
-            for (const [key, data] of Object.entries(foods)) {
-                foodSelect.innerHTML += `<option value="${key}">${data.name}</option>`;
-            }
-        }
-
+        // --- FUNCIONES MODALES ---
         function openModal(mode) {
-            modal.style.display = "block";
-            const title = document.getElementById('modal-title');
-            const idInput = document.getElementById('modal-food-id');
-            const nameInput = document.getElementById('modal-name');
-            const protInput = document.getElementById('modal-prot');
-            const calInput = document.getElementById('modal-cal');
-
-            if (mode === 'add') {
-                title.innerText = "Nuevo Alimento";
-                idInput.value = ""; nameInput.value = ""; protInput.value = ""; calInput.value = "";
-            } else if (mode === 'edit') {
-                const selectedKey = foodSelect.value;
-                if (!selectedKey) return closeModal();
-                const data = foods[selectedKey];
-                title.innerText = "Editar Fórmula";
-                idInput.value = selectedKey; nameInput.value = data.name; protInput.value = data.prot; calInput.value = data.cal;
-            }
-        }
-
-        function closeModal() {
-            modal.style.display = "none";
-            document.getElementById('modal-error').classList.add('hidden');
-        }
-
-        function saveFoodData() {
-            const id = document.getElementById('modal-food-id').value;
-            const name = document.getElementById('modal-name').value.trim();
-            const prot = parseFloat(document.getElementById('modal-prot').value);
-            const cal = parseFloat(document.getElementById('modal-cal').value);
-
-            if (!name || isNaN(prot) || isNaN(cal)) {
-                document.getElementById('modal-error').classList.remove('hidden'); return;
-            }
-            document.getElementById('modal-error').classList.add('hidden');
-
-            const foodKey = id ? id : 'food_' + Date.now();
-            foods[foodKey] = { name, prot, cal };
-            localStorage.setItem('retodb_foods', JSON.stringify(foods));
-            
-            populateDropdown();
-            foodSelect.value = foodKey; 
-            closeModal();
-        }
-
-        function deleteSelectedFood() {
-            const selectedKey = foodSelect.value;
-            if (!selectedKey) return;
-            const foodName = foods[selectedKey].name;
-            showConfirm("¿Eliminar Alimento?", `¿Estás seguro de borrar "${foodName}"?`, () => {
-                delete foods[selectedKey];
-                if (Object.keys(foods).length === 0) {
-                    foods['base_pechuga'] = { name: 'Pechuga de Pollo', prot: 31, cal: 165 };
-                }
-                localStorage.setItem('retodb_foods', JSON.stringify(foods));
-                populateDropdown();
-            });
-        }
-
-        function addEntry() {
-            const selectedKey = foodSelect.value;
-            const weight = parseFloat(weightInput.value);
-            if (!selectedKey || !weight || weight <= 0) return;
-
-            const foodData = foods[selectedKey];
-            const multiplier = weight / 100;
-            const protCalc = multiplier * foodData.prot;
-            const calCalc = multiplier * foodData.cal;
-
-            const entry = {
-                id: Date.now(),
-                name: foodData.name,
-                weight: weight,
-                prot: parseFloat(protCalc.toFixed(1)),
-                cal: Math.round(calCalc)
-            };
-
-            entries.push(entry);
-            saveAndRender();
-            weightInput.value = "";
-        }
-
-        function deleteEntry(id) {
-            entries = entries.filter(e => e.id !== id);
-            saveAndRender();
-        }
-
-        function resetDay() {
-            showConfirm("¿Resetear Día?", "¿Limpiar todo el registro de hoy?", () => {
-                entries = [];
-                saveAndRender();
-            });
-        }
-
-        function saveAndRender() {
-            localStorage.setItem('retodb_entries', JSON.stringify(entries));
-            renderDashboard();
-        }
-
-        function renderDashboard() {
-            const list = document.getElementById('entries-list');
-            const totalProtEl = document.getElementById('total-prot');
-            const totalCalEl = document.getElementById('total-cal');
-            const barProt = document.getElementById('bar-prot');
-            const barCal = document.getElementById('bar-cal');
-            
-            list.innerHTML = "";
-            let sumProt = 0; let sumCal = 0;
-
-            if (entries.length === 0) {
-                list.innerHTML = '<div class="text-center py-6 bg-gray-50 rounded-xl border border-dashed border-gray-200"><p class="text-gray-400 text-sm italic font-medium">Aún no has registrado alimentos.</p></div>';
-            }
-
-            entries.forEach(entry => {
-                sumProt += entry.prot; sumCal += entry.cal;
-                const div = document.createElement('div');
-                div.className = "grid grid-cols-12 gap-2 items-center bg-gray-50 p-2.5 rounded-xl border border-gray-200 shadow-sm transition-all hover:border-green-200";
-                div.innerHTML = `
-                    <div class="col-span-6 overflow-hidden">
-                        <p class="font-bold text-xs text-gray-800 truncate">${entry.name}</p>
-                        <p class="text-[10px] font-semibold text-gray-400">${entry.weight}g</p>
-                    </div>
-                    <div class="col-span-2 text-center">
-                        <span class="inline-block bg-indigo-100 text-indigo-700 font-black text-xs py-1 px-2 rounded w-full border border-indigo-200">${entry.prot}</span>
-                    </div>
-                    <div class="col-span-3 text-center">
-                        <span class="inline-block bg-green-100 text-green-700 font-black text-xs py-1 px-2 rounded w-full border border-green-200">${entry.cal}</span>
-                    </div>
-                    <div class="col-span-1 text-right">
-                        <button onclick="deleteEntry(${entry.id})" class="text-gray-400 hover:text-red-500 p-1 transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-
-            sumProt = parseFloat(sumProt.toFixed(1)); sumCal = Math.round(sumCal);
-            totalProtEl.innerText = sumProt; totalCalEl.innerText = sumCal;
-
-            const protPercent = Math.min((sumProt / goals.prot.opt) * 100, 100);
-            barProt.style.width = protPercent + "%";
-            document.getElementById('prot-min').className = `p-1 rounded transition-colors ${sumProt >= goals.prot.min ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-50 text-gray-400'}`;
-            document.getElementById('prot-mid').className = `p-1 rounded transition-colors ${sumProt >= goals.prot.mid ? 'bg-indigo-500 text-white shadow-sm' : 'bg-gray-50 text-gray-400'}`;
-            document.getElementById('prot-opt').className = `p-1 rounded transition-colors ${sumProt >= goals.prot.opt ? 'bg-indigo-700 text-white shadow-md' : 'bg-gray-50 text-gray-400'}`;
-
-            const calPercent = Math.min((sumCal / goals.cal.max) * 100, 100);
-            barCal.style.width = calPercent + "%";
-            if (sumCal > goals.cal.max) {
-                barCal.classList.replace('bg-green-500', 'bg-red-500');
-                totalCalEl.classList.add('text-red-600'); totalCalEl.classList.remove('text-gray-800');
+            document.getElementById('foodModal').style.display = 'block';
+            if(mode === 'edit') {
+                const k = document.getElementById('food-type').value;
+                document.getElementById('modal-food-id').value = k;
+                document.getElementById('modal-name').value = foods[k].name;
+                document.getElementById('modal-prot').value = foods[k].prot;
+                document.getElementById('modal-cal').value = foods[k].cal;
             } else {
-                barCal.classList.replace('bg-red-500', 'bg-green-500');
-                totalCalEl.classList.remove('text-red-600'); totalCalEl.classList.add('text-gray-800');
+                document.getElementById('modal-food-id').value = ""; document.getElementById('modal-name').value = "";
+                document.getElementById('modal-prot').value = ""; document.getElementById('modal-cal').value = "";
             }
-            document.getElementById('cal-min').className = `p-1 rounded transition-colors ${sumCal >= goals.cal.min ? 'bg-green-100 text-green-700' : 'bg-gray-50 text-gray-400'}`;
-            document.getElementById('cal-opt').className = `p-1 rounded transition-colors ${sumCal >= goals.cal.opt ? 'bg-green-500 text-white shadow-sm' : 'bg-gray-50 text-gray-400'}`;
-            document.getElementById('cal-max').className = `p-1 rounded transition-colors ${sumCal > goals.cal.max ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-gray-50 text-gray-400'}`;
+        }
+        function closeModal() { document.getElementById('foodModal').style.display = 'none'; }
+        function saveFoodData() {
+            const id = document.getElementById('modal-food-id').value || 'food_' + Date.now();
+            foods[id] = { name: document.getElementById('modal-name').value, prot: parseFloat(document.getElementById('modal-prot').value), cal: parseFloat(document.getElementById('modal-cal').value) };
+            localStorage.setItem('retodb_foods', JSON.stringify(foods));
+            populateDropdown(); closeModal();
+        }
+        function deleteSelectedFood() {
+            const k = document.getElementById('food-type').value;
+            showConfirm("Borrar", `¿Eliminar ${foods[k].name}?`, () => { delete foods[k]; populateDropdown(); }, "bg-red-600", "Borrar");
         }
 
-        window.onclick = function(event) {
-            if (event.target == modal) closeModal();
-            if (event.target == document.getElementById('confirmModal')) closeConfirm();
+        let confirmAction = null;
+        function showConfirm(title, msg, action, btnColor = "bg-indigo-600", btnText = "Sí, continuar") {
+            document.getElementById('confirm-title').innerText = title;
+            document.getElementById('confirm-msg').innerText = msg;
+            
+            const btn = document.getElementById('confirm-btn-yes');
+            btn.className = `px-4 py-2 text-white rounded-lg font-bold transition-colors ${btnColor}`;
+            btn.innerText = btnText;
+
+            confirmAction = action;
+            document.getElementById('confirmModal').style.display = 'block';
+        }
+        function closeConfirm() { document.getElementById('confirmModal').style.display = 'none'; }
+        function executeConfirm() { if (confirmAction) confirmAction(); closeConfirm(); }
+
+        window.onclick = e => {
+            if (e.target == document.getElementById('foodModal')) closeModal();
+            if (e.target == document.getElementById('confirmModal')) closeConfirm();
         }
 
         initApp();
