@@ -1,5 +1,4 @@
-
-              <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -32,7 +31,6 @@
         .history-details { display: none; }
         .history-details.open { display: block; animation: fadeIn 0.2s ease-in-out; }
 
-        /* Estilos para el marcador del IMC */
         #bmi-marker { transition: left 0.5s ease-out; }
     </style>
 </head>
@@ -80,9 +78,9 @@
                         <div id="bar-prot" class="bg-indigo-500 h-full progress-bar" style="width: 0%"></div>
                     </div>
                     <div class="grid grid-cols-3 gap-2 text-center text-[9px] font-bold uppercase tracking-tighter">
-                        <div id="prot-min" class="p-1 rounded bg-gray-50 text-gray-400">Mín: 117g</div>
-                        <div id="prot-mid" class="p-1 rounded bg-gray-50 text-gray-400">Med: 143g</div>
-                        <div id="prot-opt" class="p-1 rounded bg-gray-50 text-gray-400">Ópt: 162g</div>
+                        <div id="prot-min" class="p-1 rounded transition-all duration-300 border border-transparent">Mín: 117g</div>
+                        <div id="prot-mid" class="p-1 rounded transition-all duration-300 border border-transparent">Med: 143g</div>
+                        <div id="prot-opt" class="p-1 rounded transition-all duration-300 border border-transparent">Ópt: 162g</div>
                     </div>
                 </div>
 
@@ -102,9 +100,9 @@
                         <div id="bar-cal" class="bg-green-500 h-full progress-bar" style="width: 0%"></div>
                     </div>
                     <div class="grid grid-cols-3 gap-2 text-center text-[9px] font-bold uppercase tracking-tighter">
-                        <div id="cal-min" class="p-1 rounded bg-gray-50 text-gray-400">Suelo: 1500</div>
-                        <div id="cal-opt" class="p-1 rounded bg-gray-50 text-gray-400">Meta: 1700</div>
-                        <div id="cal-max" class="p-1 rounded bg-gray-50 text-gray-400">Límite: 2200</div>
+                        <div id="cal-min" class="p-1 rounded transition-all duration-300 border border-transparent">Suelo: 1500</div>
+                        <div id="cal-opt" class="p-1 rounded transition-all duration-300 border border-transparent">Meta: 1700</div>
+                        <div id="cal-max" class="p-1 rounded transition-all duration-300 border border-transparent">Límite: 2200</div>
                     </div>
                 </div>
             </div>
@@ -116,24 +114,24 @@
                         <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                         Ingresar Comida
                     </h2>
-                    <button onclick="openModal('add')" class="text-[10px] font-bold text-green-700 bg-green-50 px-2 py-1.5 rounded-lg hover:bg-green-100 border border-green-100">
+                    <button onclick="openModal('add')" class="text-[10px] font-bold text-green-700 bg-green-50 px-2 py-1.5 rounded-lg hover:bg-green-100 border border-green-100 transition-colors">
                         + Crear Base
                     </button>
                 </div>
                 
                 <div class="space-y-4">
                     <div class="grid grid-cols-3 gap-2 p-1 bg-gray-100 rounded-xl">
-                        <button onclick="setMeal('desayuno')" id="btn-meal-desayuno" class="meal-btn bg-white shadow-sm text-indigo-600 font-bold text-xs py-2 rounded-lg">Desayuno</button>
-                        <button onclick="setMeal('almuerzo')" id="btn-meal-almuerzo" class="meal-btn text-gray-500 font-medium text-xs py-2 rounded-lg">Almuerzo</button>
-                        <button onclick="setMeal('cena')" id="btn-meal-cena" class="meal-btn text-gray-500 font-medium text-xs py-2 rounded-lg">Cena</button>
+                        <button onclick="setMeal('desayuno')" id="btn-meal-desayuno" class="meal-btn bg-white shadow-sm text-indigo-600 font-bold text-xs py-2 rounded-lg transition-all border border-gray-100">Desayuno</button>
+                        <button onclick="setMeal('almuerzo')" id="btn-meal-almuerzo" class="meal-btn text-gray-500 font-medium text-xs py-2 rounded-lg transition-all hover:bg-gray-200 bg-transparent border border-transparent">Almuerzo</button>
+                        <button onclick="setMeal('cena')" id="btn-meal-cena" class="meal-btn text-gray-500 font-medium text-xs py-2 rounded-lg transition-all hover:bg-gray-200 bg-transparent border border-transparent">Cena</button>
                     </div>
 
                     <div>
                         <div class="flex justify-between mb-1 items-end">
                             <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Alimento</label>
                             <div class="space-x-1">
-                                <button onclick="openModal('edit')" class="text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">✏️ Editar</button>
-                                <button onclick="deleteSelectedFood()" class="text-[9px] font-bold text-red-600 bg-red-50 px-2 py-1 rounded">🗑️ Borrar</button>
+                                <button onclick="openModal('edit')" class="text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded hover:bg-blue-100 transition-colors">✏️ Editar</button>
+                                <button onclick="deleteSelectedFood()" class="text-[9px] font-bold text-red-600 bg-red-50 px-2 py-1 rounded hover:bg-red-100 transition-colors">🗑️ Borrar</button>
                             </div>
                         </div>
                         <select id="food-type" class="w-full p-3 bg-gray-50 border border-gray-200 text-gray-800 rounded-xl focus:ring-2 focus:ring-green-500 outline-none font-semibold appearance-none">
@@ -156,7 +154,7 @@
             <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 mb-6">
                 <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
                     <h2 class="text-lg font-bold text-gray-800">Diario de Hoy</h2>
-                    <button onclick="resetDay()" class="text-[10px] text-red-500 font-bold hover:underline px-2 py-1 bg-red-50 rounded">Resetear Todo</button>
+                    <button onclick="resetDay()" class="text-[10px] text-red-500 font-bold hover:underline px-2 py-1 bg-red-50 rounded hover:bg-red-100 transition-colors">Resetear Todo</button>
                 </div>
                 
                 <div id="entries-container" class="space-y-4">
@@ -164,7 +162,7 @@
                 </div>
 
                 <div class="mt-6 pt-4 border-t border-gray-100">
-                    <button onclick="saveDayToHistory()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-wide py-3 rounded-xl shadow-md active:scale-[0.98] transition-transform flex items-center justify-center">
+                    <button onclick="openSaveDateModal()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-wide py-3 rounded-xl shadow-md active:scale-[0.98] transition-transform flex items-center justify-center">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                         Guardar Día en Historial
                     </button>
@@ -176,13 +174,35 @@
         <!-- VISTA 2: HISTORIAL                         -->
         <!-- ========================================== -->
         <div id="view-history" class="view-section">
+            
+            <!-- DASHBOARD DE PROGRESO DEL RETO -->
+            <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 mb-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -z-10 opacity-60"></div>
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Progreso del Reto</h3>
+                        <div class="flex items-end gap-2 mt-1">
+                            <span id="challenge-current" class="text-4xl font-black text-gray-800">0</span>
+                            <span class="text-sm font-bold text-gray-400 mb-1">/ <span id="challenge-total">30</span> Días</span>
+                        </div>
+                    </div>
+                    <button onclick="editChallengeGoal()" class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded hover:bg-indigo-100 transition-colors shadow-sm border border-indigo-100">
+                        ✏️ Editar Meta
+                    </button>
+                </div>
+                <div class="w-full bg-gray-100 rounded-full h-2.5 mt-2 overflow-hidden shadow-inner">
+                    <div id="challenge-bar" class="bg-indigo-500 h-full progress-bar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- LISTA DE HISTORIAL -->
             <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 mb-6">
                 <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
                     <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                        <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
                         Historial
                     </h2>
-                    <button onclick="exportToPDF()" class="text-xs font-bold text-white bg-red-600 px-3 py-1.5 rounded-lg hover:bg-red-700 shadow-sm flex items-center">
+                    <button onclick="exportToPDF()" class="text-xs font-bold text-white bg-red-600 px-3 py-1.5 rounded-lg hover:bg-red-700 shadow-sm flex items-center transition-colors">
                         📄 Exportar PDF
                     </button>
                 </div>
@@ -300,7 +320,39 @@
         </div>
     </div>
 
-    <!-- MODAL PARA CREAR/EDITAR ALIMENTO -->
+    <!-- MODALES -->
+
+    <!-- Modal Seleccion de Fecha al Guardar -->
+    <div id="saveDateModal" class="modal">
+        <div class="modal-content shadow-2xl max-w-xs mx-auto text-center mt-32 border-t-4 border-indigo-500">
+            <h3 class="text-lg font-black text-gray-800 mb-2">Seleccionar Fecha</h3>
+            <p class="text-xs text-gray-500 mb-4">¿Con qué fecha deseas registrar esta comida en el historial?</p>
+            
+            <input type="date" id="history-date-input" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none font-bold text-gray-700 mb-6 focus:ring-2 focus:ring-indigo-500">
+            
+            <div class="flex justify-center space-x-3">
+                <button onclick="closeSaveDateModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-bold hover:bg-gray-200 transition-colors">Cancelar</button>
+                <button onclick="confirmSaveDay()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 shadow-md transition-colors">Guardar Día</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Meta -->
+    <div id="editGoalModal" class="modal">
+        <div class="modal-content shadow-2xl max-w-xs mx-auto text-center mt-32 border-t-4 border-blue-500">
+            <h3 class="text-lg font-black text-gray-800 mb-2">Editar Meta del Reto</h3>
+            <p class="text-xs text-gray-500 mb-4">¿De cuántos días es tu reto en total?</p>
+            
+            <input type="number" id="goal-days-input" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none font-bold text-gray-700 mb-6 focus:ring-2 focus:ring-blue-500 text-center" min="1">
+            
+            <div class="flex justify-center space-x-3">
+                <button onclick="closeEditGoalModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-bold hover:bg-gray-200 transition-colors">Cancelar</button>
+                <button onclick="saveEditGoal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 shadow-md transition-colors">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Para Editar Alimento Base -->
     <div id="foodModal" class="modal">
         <div class="modal-content shadow-2xl">
             <div class="flex justify-between items-center mb-6">
@@ -323,20 +375,29 @@
                         <input type="number" id="modal-cal" class="w-full p-2 bg-white border border-green-200 text-gray-800 rounded-lg outline-none text-center font-bold">
                     </div>
                 </div>
-                <button onclick="saveFoodData()" class="w-full bg-green-600 hover:bg-green-500 text-white font-black uppercase py-3 rounded-xl transition-all">Guardar</button>
+                <button onclick="saveFoodData()" class="w-full bg-green-600 hover:bg-green-500 text-white font-black uppercase py-3 rounded-xl transition-all shadow-md">Guardar</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL CONFIRMACION -->
+    <!-- Modal Confirmación Genérico -->
     <div id="confirmModal" class="modal">
         <div class="modal-content shadow-2xl max-w-xs mx-auto text-center mt-32">
             <h3 id="confirm-title" class="text-xl font-black text-gray-800 mb-2">Confirmar</h3>
             <p id="confirm-msg" class="text-sm text-gray-500 mb-6">¿Estás seguro?</p>
             <div class="flex justify-center space-x-3">
-                <button onclick="closeConfirm()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-bold hover:bg-gray-200">Cancelar</button>
-                <button id="confirm-btn-yes" onclick="executeConfirm()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700">Sí, continuar</button>
+                <button onclick="closeConfirm()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-bold hover:bg-gray-200 transition-colors">Cancelar</button>
+                <button id="confirm-btn-yes" onclick="executeConfirm()" class="px-4 py-2 text-white rounded-lg font-bold shadow-md transition-colors">Sí, continuar</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal Alert Simple -->
+    <div id="alertModal" class="modal">
+        <div class="modal-content shadow-2xl max-w-xs mx-auto text-center mt-32 border-t-4 border-indigo-500">
+            <h3 id="alert-title" class="text-lg font-black text-gray-800 mb-2">Aviso</h3>
+            <p id="alert-msg" class="text-sm text-gray-500 mb-6">Mensaje</p>
+            <button onclick="closeAlert()" class="px-4 py-2 bg-gray-800 text-white rounded-lg font-bold hover:bg-gray-900 shadow-md w-full transition-colors">Entendido</button>
         </div>
     </div>
 
@@ -385,7 +446,7 @@
         }
         
         let profile = JSON.parse(localStorage.getItem('retodb_profile')) || { name: '', weight: '', height: '' };
-
+        let challengeGoalDays = parseInt(localStorage.getItem('retodb_challenge_goal')) || 30;
         let currentMeal = 'desayuno';
 
         // --- 3. INICIALIZACIÓN ---
@@ -412,8 +473,8 @@
             currentMeal = meal;
             ['desayuno', 'almuerzo', 'cena'].forEach(m => {
                 const btn = document.getElementById(`btn-meal-${m}`);
-                if (m === meal) btn.className = "meal-btn bg-white shadow-sm text-indigo-600 font-bold text-xs py-2 rounded-lg transition-all";
-                else btn.className = "meal-btn text-gray-500 font-medium text-xs py-2 rounded-lg transition-all hover:bg-gray-200 bg-transparent";
+                if (m === meal) btn.className = "meal-btn bg-white shadow-sm text-indigo-600 font-bold text-xs py-2 rounded-lg transition-all border border-gray-100";
+                else btn.className = "meal-btn text-gray-500 font-medium text-xs py-2 rounded-lg transition-all hover:bg-gray-200 bg-transparent border border-transparent";
             });
             document.getElementById('btn-meal-text').innerText = meal.charAt(0).toUpperCase() + meal.slice(1);
         }
@@ -454,47 +515,80 @@
         }
 
         function resetDay() {
-            showConfirm("Resetear Día", "¿Borrar los registros de hoy de forma permanente?", () => {
+            showConfirm("Resetear Día", "¿Borrar los registros de hoy del tablero?", () => {
                 entries = [];
                 localStorage.setItem('retodb_entries', JSON.stringify(entries));
                 renderDashboard();
-            }, "bg-red-600", "Sí, borrar");
+            }, "bg-red-600 hover:bg-red-700", "Sí, borrar");
         }
 
-        function saveDayToHistory() {
+        // --- SELECCION DE FECHA PARA GUARDAR ---
+        function openSaveDateModal() {
             if (entries.length === 0) {
-                alert("No hay nada que guardar hoy."); return;
+                showAlert("Atención", "El tablero está vacío. Agrega alimentos antes de guardar."); 
+                return;
             }
+            const today = new Date();
+            const offset = today.getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(today - offset)).toISOString().split('T')[0];
+            
+            document.getElementById('history-date-input').value = localISOTime;
+            document.getElementById('saveDateModal').style.display = 'block';
+        }
 
-            showConfirm("Guardar Día", "¿Guardar en el historial? Los datos del tablero se mantendrán hasta que decidas resetearlos.", () => {
-                let d = new Date();
-                const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-                let displayStr = `${d.getDate()} de ${meses[d.getMonth()]}, ${d.getFullYear()}`;
-                
-                let grandProt = 0; let grandCal = 0;
-                let mealsObj = { desayuno: [], almuerzo: [], cena: [] };
-                
-                entries.forEach(e => {
-                    grandProt += e.prot; grandCal += e.cal;
-                    mealsObj[e.meal].push(e);
-                });
+        function closeSaveDateModal() { document.getElementById('saveDateModal').style.display = 'none'; }
 
-                const newEntry = {
-                    id: Date.now().toString(),
-                    date: d.toISOString().split('T')[0],
-                    displayDate: displayStr,
-                    prot: parseFloat(grandProt.toFixed(1)),
-                    cal: Math.round(grandCal),
-                    detailed: true,
-                    meals: mealsObj
-                };
+        function formatDisplayDate(dateStr) {
+            const partes = dateStr.split('-');
+            if (partes.length !== 3) return dateStr;
+            const year = partes[0]; const monthIndex = parseInt(partes[1]) - 1; const day = parseInt(partes[2]);
+            const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            return `${day} de ${meses[monthIndex]}, ${year}`;
+        }
 
-                history.unshift(newEntry);
-                localStorage.setItem('retodb_history', JSON.stringify(history));
-                
-                alert("¡Guardado en el historial con éxito!");
-                renderHistory();
-            }, "bg-indigo-600", "Guardar");
+        function confirmSaveDay() {
+            const dateInputVal = document.getElementById('history-date-input').value;
+            if(!dateInputVal) { showAlert("Error", "Selecciona una fecha válida."); return; }
+
+            const displayStr = formatDisplayDate(dateInputVal);
+            
+            let grandProt = 0; let grandCal = 0;
+            let mealsObj = { desayuno: [], almuerzo: [], cena: [] };
+            
+            entries.forEach(e => {
+                grandProt += e.prot; grandCal += e.cal;
+                mealsObj[e.meal].push(e);
+            });
+
+            const newEntry = {
+                id: Date.now().toString(),
+                date: dateInputVal,
+                displayDate: displayStr,
+                prot: parseFloat(grandProt.toFixed(1)),
+                cal: Math.round(grandCal),
+                detailed: true,
+                meals: mealsObj
+            };
+
+            const existingIndex = history.findIndex(h => h.date === dateInputVal);
+            if(existingIndex !== -1) {
+                showConfirm("Fecha Duplicada", `Ya tienes un registro guardado para el ${displayStr}. ¿Deseas reemplazarlo con los datos actuales?`, () => {
+                    history.splice(existingIndex, 1);
+                    finishSaveDay(newEntry, displayStr);
+                }, "bg-orange-500 hover:bg-orange-600", "Reemplazar");
+                return;
+            }
+            finishSaveDay(newEntry, displayStr);
+        }
+
+        function finishSaveDay(newEntry, displayStr) {
+            history.push(newEntry);
+            history.sort((a, b) => new Date(b.date) - new Date(a.date));
+            localStorage.setItem('retodb_history', JSON.stringify(history));
+            
+            closeSaveDateModal();
+            showAlert("¡Éxito!", `Datos guardados correctamente para el ${displayStr}.`);
+            renderHistory();
         }
 
         function renderDashboard() {
@@ -518,7 +612,7 @@
                 if (mealEntries.length > 0) {
                     let html = `
                     <div class="mb-4">
-                        <div class="flex justify-between items-center mb-2 px-1">
+                        <div class="flex justify-between items-center mb-2 px-1 border-b border-gray-100 pb-1">
                             <h3 class="font-black text-gray-700 text-xs uppercase">${mealCfg.title}</h3>
                             <div class="text-[10px] font-bold text-gray-500">
                                 <span class="text-indigo-600">${mealProt.toFixed(1)}g P</span> | <span class="text-green-600">${Math.round(mealCal)} kcal</span>
@@ -555,11 +649,64 @@
             document.getElementById('bar-prot').style.width = Math.min((grandProt / goals.prot.opt) * 100, 100) + "%";
             document.getElementById('bar-cal').style.width = Math.min((grandCal / goals.cal.max) * 100, 100) + "%";
             
-            if (grandCal > goals.cal.max) document.getElementById('bar-cal').classList.replace('bg-green-500', 'bg-red-500');
-            else document.getElementById('bar-cal').classList.replace('bg-red-500', 'bg-green-500');
+            // LÓGICA VISUAL EXCLUSIVA DE INDICADORES (Mín, Med, Ópt)
+            const pMin = document.getElementById('prot-min');
+            const pMid = document.getElementById('prot-mid');
+            const pOpt = document.getElementById('prot-opt');
+            
+            // Evaluar niveles de proteína exclusivamente
+            let pMinActive = grandProt >= goals.prot.min && grandProt < goals.prot.mid;
+            let pMidActive = grandProt >= goals.prot.mid && grandProt < goals.prot.opt;
+            let pOptActive = grandProt >= goals.prot.opt;
+            
+            pMin.className = `p-1 rounded transition-colors border ${pMinActive ? 'bg-indigo-500 text-white shadow-sm border-indigo-600' : 'bg-gray-50 text-gray-400 border-transparent'}`;
+            pMid.className = `p-1 rounded transition-colors border ${pMidActive ? 'bg-indigo-600 text-white shadow-sm border-indigo-700' : 'bg-gray-50 text-gray-400 border-transparent'}`;
+            pOpt.className = `p-1 rounded transition-all transform border ${pOptActive ? 'bg-indigo-700 text-white shadow-md scale-[1.02] border-indigo-800' : 'bg-gray-50 text-gray-400 border-transparent'}`;
+
+            // Lógica Calorías Exclusiva
+            const cMin = document.getElementById('cal-min');
+            const cOpt = document.getElementById('cal-opt');
+            const cMax = document.getElementById('cal-max');
+
+            let cMinActive = grandCal >= goals.cal.min && grandCal < goals.cal.opt;
+            let cOptActive = grandCal >= goals.cal.opt && grandCal <= goals.cal.max;
+            let cMaxActive = grandCal > goals.cal.max;
+
+            if (cMaxActive) {
+                document.getElementById('bar-cal').classList.replace('bg-green-500', 'bg-red-500');
+            } else {
+                document.getElementById('bar-cal').classList.replace('bg-red-500', 'bg-green-500');
+            }
+            
+            cMin.className = `p-1 rounded transition-colors border ${cMinActive ? 'bg-green-500 text-white shadow-sm border-green-600' : 'bg-gray-50 text-gray-400 border-transparent'}`;
+            cOpt.className = `p-1 rounded transition-colors border ${cOptActive ? 'bg-green-600 text-white shadow-sm border-green-700' : 'bg-gray-50 text-gray-400 border-transparent'}`;
+            cMax.className = `p-1 rounded transition-all transform border ${cMaxActive ? 'bg-red-600 text-white shadow-md scale-[1.02] border-red-700' : 'bg-gray-50 text-gray-400 border-transparent'}`;
         }
 
-        // --- 5. HISTORIAL Y PDF ---
+        // --- 5. HISTORIAL, META Y PDF ---
+        function editChallengeGoal() {
+            document.getElementById('goal-days-input').value = challengeGoalDays;
+            document.getElementById('editGoalModal').style.display = 'block';
+        }
+        function closeEditGoalModal() { document.getElementById('editGoalModal').style.display = 'none'; }
+        function saveEditGoal() {
+            let newVal = document.getElementById('goal-days-input').value;
+            if(newVal && !isNaN(newVal) && parseInt(newVal) > 0) {
+                challengeGoalDays = parseInt(newVal);
+                localStorage.setItem('retodb_challenge_goal', challengeGoalDays);
+                renderHistory(); closeEditGoalModal();
+            } else { showAlert("Error", "Por favor ingresa un número de días válido."); }
+        }
+
+        function updateChallengeProgress() {
+            const uniqueDates = new Set(history.map(h => h.date));
+            const completedDays = uniqueDates.size;
+            document.getElementById('challenge-current').innerText = completedDays;
+            document.getElementById('challenge-total').innerText = challengeGoalDays;
+            const percent = Math.min((completedDays / challengeGoalDays) * 100, 100);
+            document.getElementById('challenge-bar').style.width = percent + "%";
+        }
+
         function getStatus(value, min, mid, opt, isCal = false) {
             if (isCal) {
                 if (value < min) return { text: 'BAJO', color: 'bg-red-100 text-red-700' };
@@ -579,7 +726,6 @@
             if (el) el.classList.toggle('open');
         }
 
-        // Borrado del Historial Individual
         function deleteHistoryItem(id) {
             history = history.filter(h => h.id !== id);
             localStorage.setItem('retodb_history', JSON.stringify(history));
@@ -591,16 +737,21 @@
             if (!item) return;
             showConfirm(
                 "Eliminar del Historial",
-                `¿Estás seguro de eliminar el registro del ${item.displayDate}? Esta acción no se puede deshacer.`,
+                `¿Estás seguro de eliminar permanentemente el registro del ${item.displayDate}?`,
                 () => { deleteHistoryItem(id); },
-                "bg-red-600",
+                "bg-red-600 hover:bg-red-700",
                 "Sí, eliminar"
             );
         }
 
         function renderHistory() {
+            updateChallengeProgress();
             const list = document.getElementById('history-list');
             list.innerHTML = "";
+
+            if(history.length === 0) {
+                list.innerHTML = '<p class="text-center py-4 text-gray-400 text-xs font-medium italic">Tu historial está vacío.</p>'; return;
+            }
 
             history.forEach(h => {
                 const protStatus = getStatus(h.prot, goals.prot.min, goals.prot.mid, goals.prot.opt, false);
@@ -613,8 +764,7 @@
                             <span class="font-bold text-xs text-gray-800">📅 ${h.displayDate}</span>
                             <div class="flex items-center gap-2">
                                 ${h.detailed ? '<span class="text-[10px] text-gray-400 font-bold">🔽 Ver Diario</span>' : ''}
-                                <!-- Botón para Eliminar individualmente del historial -->
-                                <button onclick="event.stopPropagation(); deleteHistoryConfirm('${h.id}')" class="text-[10px] font-bold text-red-600 bg-red-50 hover:bg-red-100 px-2 py-0.5 rounded transition-colors">
+                                <button onclick="event.stopPropagation(); deleteHistoryConfirm('${h.id}')" class="text-[10px] font-bold text-red-600 bg-red-50 hover:bg-red-100 px-2 py-0.5 rounded transition-colors shadow-sm border border-red-100">
                                     🗑️ Borrar
                                 </button>
                             </div>
@@ -638,9 +788,9 @@
                             let mProt = 0; let mCal = 0; let itemsHtml = '';
                             h.meals[m].forEach(item => {
                                 mProt += item.prot; mCal += item.cal;
-                                itemsHtml += `<div class="flex justify-between text-[10px] text-gray-500 ml-2 mt-1"><span>- ${item.name} (${item.weight}g)</span> <span>${item.prot}g P / ${item.cal} c</span></div>`;
+                                itemsHtml += `<div class="flex justify-between text-[10px] text-gray-500 ml-2 mt-1"><span>- ${item.name} (${item.weight}g)</span> <span><strong class="text-indigo-400">${item.prot}g</strong> / <strong class="text-green-400">${item.cal}c</strong></span></div>`;
                             });
-                            html += `<div class="mb-2"><div class="font-bold text-gray-700 capitalize flex justify-between text-[11px] bg-gray-50 px-2 py-1 rounded"><span>${m}</span><span class="text-gray-400">${mProt.toFixed(1)}g P | ${mCal} cal</span></div>${itemsHtml}</div>`;
+                            html += `<div class="mb-2"><div class="font-bold text-gray-700 capitalize flex justify-between text-[11px] bg-gray-50 px-2 py-1 rounded"><span>${m}</span><span class="text-gray-500">${mProt.toFixed(1)}g P | ${mCal} cal</span></div>${itemsHtml}</div>`;
                         }
                     });
                     html += `</div>`;
@@ -650,79 +800,45 @@
             });
         }
 
-        // NUEVA FUNCIÓN MEJORADA: PDF con desglose completo y subtotales por comida/alimento
         function exportToPDF() {
-            if(!window.jspdf) { alert("Cargando librerías PDF, intenta de nuevo en 2 segundos."); return; }
+            if(!window.jspdf) { showAlert("Aviso", "Cargando librerías PDF, intenta de nuevo en 2 segundos."); return; }
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
             
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            doc.setFontSize(16);
-            doc.setFont("Helvetica", "bold");
-            doc.text("REPORTE NUTRICIONAL DETALLADO - OPERACIÓN ABDOMEN", 14, 15);
-            doc.setFontSize(10);
-            doc.setFont("Helvetica", "normal");
-            doc.setTextColor(100);
+            doc.setFontSize(16); doc.setFont("Helvetica", "bold"); doc.text("REPORTE NUTRICIONAL DETALLADO", 14, 15);
+            doc.setFontSize(10); doc.setFont("Helvetica", "normal"); doc.setTextColor(100);
             doc.text(`Generado: ${new Date().toLocaleDateString()} | Atleta: ${profile.name || 'Yasser'}`, 14, 22);
 
-            const tableColumn = ["Fecha", "Comida / Alimento", "Cantidad (g)", "Proteína", "Calorías"];
+            const tableColumn = ["Fecha / Comida", "Alimento", "Cantidad (g)", "Proteína", "Calorías"];
             const tableRows = [];
+            const pdfHistory = [...history].reverse();
 
-            history.forEach(h => {
+            pdfHistory.forEach(h => {
                 if (h.detailed && h.meals) {
-                    let isFirstRowOfDay = true;
+                    tableRows.push([{ content: `📅 ${h.displayDate}`, colSpan: 5, styles: { fillColor: [224, 231, 255], textColor: [55, 48, 163], fontStyle: 'bold' } }]);
                     ['desayuno', 'almuerzo', 'cena'].forEach(meal => {
                         if (h.meals[meal] && h.meals[meal].length > 0) {
-                            h.meals[meal].forEach(item => {
-                                tableRows.push([
-                                    isFirstRowOfDay ? h.displayDate : "",
-                                    `${meal.toUpperCase()} - ${item.name}`,
-                                    `${item.weight}g`,
-                                    `${item.prot}g`,
-                                    `${item.cal} kcal`
-                                ]);
-                                isFirstRowOfDay = false;
+                            h.meals[meal].forEach((item, index) => {
+                                tableRows.push([ index === 0 ? meal.toUpperCase() : "", item.name, `${item.weight}g`, `${item.prot}g`, `${item.cal} kcal` ]);
                             });
                         }
                     });
-                    // Fila de subtotal para este día específico
-                    tableRows.push([
-                        `TOTAL ${h.displayDate}`,
-                        "",
-                        "",
-                        `${h.prot}g`,
-                        `${h.cal} kcal`
-                    ]);
+                    tableRows.push([{ content: 'TOTAL DEL DÍA', colSpan: 3, styles: { fontStyle: 'bold', halign: 'right' } }, `${h.prot}g`, `${h.cal} kcal`]);
                 } else {
-                    // Entradas rápidas iniciales
-                    tableRows.push([
-                        h.displayDate,
-                        "Registro rápido (Manual)",
-                        "-",
-                        `${h.prot}g`,
-                        `${h.cal} kcal`
-                    ]);
+                    tableRows.push([{ content: `📅 ${h.displayDate} (Registro Manual)`, colSpan: 5, styles: { fillColor: [243, 244, 246], textColor: [75, 85, 99], fontStyle: 'bold' } }]);
+                    tableRows.push(["-", "Resumen Consolidado", "-", `${h.prot}g`, `${h.cal} kcal`]);
                 }
             });
 
             doc.autoTable({
-                head: [tableColumn],
-                body: tableRows,
-                startY: 28,
-                theme: 'striped',
-                headStyles: { fillColor: [16, 185, 129] }, // Emerald-500
+                head: [tableColumn], body: tableRows, startY: 28, theme: 'grid', headStyles: { fillColor: [16, 185, 129] }, 
                 styles: { fontSize: 8, cellPadding: 2 },
                 didParseCell: function(data) {
-                    // Si es una fila de subtotal del día, le aplicamos diseño bold y color especial
-                    if (data.row.raw[0] && data.row.raw[0].startsWith("TOTAL")) {
-                        data.cell.styles.fontStyle = 'bold';
-                        data.cell.styles.fillColor = [240, 253, 244]; // Soft green bg
-                        data.cell.styles.textColor = [21, 128, 61]; // Forest green
+                    if (data.row.raw[0] && data.row.raw[0].content === 'TOTAL DEL DÍA') {
+                        data.cell.styles.fontStyle = 'bold'; data.cell.styles.fillColor = [240, 253, 244]; data.cell.styles.textColor = [21, 128, 61];
                     }
                 }
             });
-
-            doc.save(`Reporte_Nutricional_Detallado_${new Date().toISOString().split('T')[0]}.pdf`);
+            doc.save(`Reporte_Operacion_Abdomen_${new Date().toISOString().split('T')[0]}.pdf`);
         }
 
         // --- 6. PERFIL E IMC GRÁFICO ---
@@ -744,14 +860,9 @@
             const valEl = document.getElementById('bmi-value'); const statEl = document.getElementById('bmi-status');
             const marker = document.getElementById('bmi-marker');
 
-            if (!w || !h || h <= 0) { 
-                valEl.innerText = "0.0"; statEl.innerText = "Ingresa datos"; 
-                marker.style.left = "0%"; return; 
-            }
+            if (!w || !h || h <= 0) { valEl.innerText = "0.0"; statEl.innerText = "Ingresa datos"; marker.style.left = "0%"; return; }
 
-            const bmi = (w / (h * h));
-            valEl.innerText = bmi.toFixed(1);
-
+            const bmi = (w / (h * h)); valEl.innerText = bmi.toFixed(1);
             let percent = 0;
             if (bmi < 18.5) percent = (bmi / 18.5) * 25;
             else if (bmi <= 24.9) percent = 25 + ((bmi - 18.5) / 6.4) * 25;
@@ -765,7 +876,7 @@
             else { statEl.innerText = "Sobrepeso / Obesidad"; statEl.className = "text-xs font-bold px-2 py-1 rounded-md mb-1 bg-orange-100 text-orange-700"; }
         }
 
-        // --- FUNCIONES MODALES ---
+        // --- FUNCIONES MODALES GLOBALES ---
         function openModal(mode) {
             document.getElementById('foodModal').style.display = 'block';
             if(mode === 'edit') {
@@ -788,18 +899,23 @@
         }
         function deleteSelectedFood() {
             const k = document.getElementById('food-type').value;
-            showConfirm("Borrar", `¿Eliminar ${foods[k].name}?`, () => { delete foods[k]; populateDropdown(); }, "bg-red-600", "Borrar");
+            showConfirm("Borrar Base", `¿Eliminar ${foods[k].name} de la base de datos?`, () => { delete foods[k]; populateDropdown(); }, "bg-red-600 hover:bg-red-700", "Borrar");
         }
 
+        function showAlert(title, msg) {
+            document.getElementById('alert-title').innerText = title;
+            document.getElementById('alert-msg').innerText = msg;
+            document.getElementById('alertModal').style.display = 'block';
+        }
+        function closeAlert() { document.getElementById('alertModal').style.display = 'none'; }
+
         let confirmAction = null;
-        function showConfirm(title, msg, action, btnColor = "bg-indigo-600", btnText = "Sí, continuar") {
+        function showConfirm(title, msg, action, btnColor = "bg-indigo-600 hover:bg-indigo-700", btnText = "Sí, continuar") {
             document.getElementById('confirm-title').innerText = title;
             document.getElementById('confirm-msg').innerText = msg;
-            
             const btn = document.getElementById('confirm-btn-yes');
-            btn.className = `px-4 py-2 text-white rounded-lg font-bold transition-colors ${btnColor}`;
+            btn.className = `px-4 py-2 text-white rounded-lg font-bold transition-colors shadow-md ${btnColor}`;
             btn.innerText = btnText;
-
             confirmAction = action;
             document.getElementById('confirmModal').style.display = 'block';
         }
@@ -809,6 +925,9 @@
         window.onclick = e => {
             if (e.target == document.getElementById('foodModal')) closeModal();
             if (e.target == document.getElementById('confirmModal')) closeConfirm();
+            if (e.target == document.getElementById('saveDateModal')) closeSaveDateModal();
+            if (e.target == document.getElementById('editGoalModal')) closeEditGoalModal();
+            if (e.target == document.getElementById('alertModal')) closeAlert();
         }
 
         initApp();
